@@ -1065,7 +1065,11 @@
     enable the desktop specific features.
     -->
     <bool name="config_enableDesktopFeatureSet">false</bool>
-
+`
     <!-- Udfps vendor code -->
     <integer name="config_udfpsVendorCode">0</integer>
+
+    <!-- Whether to pulse onFingerDown actions instead
+    of waking the screen while the screen is off or in lpm. -->
+    <bool name="config_pulseOnFingerDown">false</bool>
 </resources>
