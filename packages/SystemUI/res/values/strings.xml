@@ -3865,4 +3865,6 @@ Action + ESC for this.</string>
     <string name="qs_edit_mode_category_unknown">
         Unknown
     </string>
+    <!-- Button to restart SystemUI, within the Restart Options dialog -->
+    <string name="global_action_restart_systemui">SystemUI</string>
 </resources>
