@@ -38,6 +38,10 @@ android_app {
     aaptflags: ["--shared-lib"],
     export_package_resources: true,
     optimize: {
+        enabled: true,
+        optimize: true,
+        shrink: true,
+        obfuscate: true,
         proguard_flags_files: ["proguard.proguard"],
     },
 }
