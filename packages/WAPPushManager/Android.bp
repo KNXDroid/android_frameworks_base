@@ -27,6 +27,10 @@ android_app {
     libs: ["telephony-common"],
     static_libs: ["android-common"],
     optimize: {
+        enabled: true,
+        optimize: true,
+        shrink: true,
+        obfuscate: true,
         proguard_flags_files: ["proguard.flags"],
     },
 
