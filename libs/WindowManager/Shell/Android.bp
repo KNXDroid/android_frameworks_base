@@ -29,6 +29,11 @@ java_library {
         "src/com/android/wm/shell/protolog/ShellProtoLogGroup.java",
         ":protolog-common-src",
     ],
+
+    optimize: {
+        enabled: true,
+        shrink: true,
+    },
 }
 
 filegroup {
@@ -203,6 +208,11 @@ android_library {
         ":wm_shell-aidls",
         ":wm_shell-shared-aidls",
     ],
+
+    optimize: {
+        enabled: true,
+        shrink: true,
+    },
     resource_dirs: [
         "res",
     ],
