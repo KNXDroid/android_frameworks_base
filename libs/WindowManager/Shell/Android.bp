@@ -31,6 +31,11 @@ java_library {
     static_libs: [
         "protolog-common-lib",
     ],
+
+    optimize: {
+        enabled: true,
+        shrink: true,
+    },
 }
 
 filegroup {
@@ -134,6 +139,11 @@ android_library {
         ":wm_shell_protolog_src",
         "src/com/android/wm/shell/EventLogTags.logtags",
     ],
+
+    optimize: {
+        enabled: true,
+        shrink: true,
+    },
     resource_dirs: [
         "res",
     ],
