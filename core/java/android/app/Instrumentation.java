@@ -64,6 +64,7 @@ import android.view.WindowManagerGlobal;
 import com.android.internal.content.ReferrerIntent;
 
 import com.android.internal.gmscompat.AttestationHooks;
+import com.android.internal.util.GamesPropsUtils;
 
 import java.io.File;
 import java.lang.annotation.Retention;
@@ -1356,6 +1357,7 @@ public class Instrumentation {
                 .instantiateApplication(cl, className);
         app.attach(context);
         AttestationHooks.initApplicationBeforeOnCreate(context);
+        GamesPropsUtils.setProps(context);
         return app;
     }
     
@@ -1374,6 +1376,7 @@ public class Instrumentation {
         Application app = (Application)clazz.newInstance();
         app.attach(context);
         AttestationHooks.initApplicationBeforeOnCreate(context);
+        GamesPropsUtils.setProps(context);
         return app;
     }
 
