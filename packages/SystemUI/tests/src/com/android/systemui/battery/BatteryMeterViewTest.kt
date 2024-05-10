@@ -144,31 +144,6 @@ class BatteryMeterViewTest : SysuiTestCase() {
     }
 
     @Test
-    @DisableFlags(FLAG_NEW_STATUS_BAR_ICONS)
-    fun changesFromEstimateToPercent_textAndContentDescriptionChanges_flagOff() {
-        mBatteryMeterView.onBatteryLevelChanged(15, false)
-        mBatteryMeterView.setPercentShowMode(BatteryMeterView.MODE_ESTIMATE)
-        mBatteryMeterView.setBatteryEstimateFetcher(Fetcher())
-
-        mBatteryMeterView.updatePercentText()
-
-        assertThat(mBatteryMeterView.contentDescription).isEqualTo(
-                context.getString(
-                        R.string.accessibility_battery_level_with_estimate, 15, ESTIMATE
-                )
-        )
-
-        // Update the show mode from estimate to percent
-        mBatteryMeterView.setPercentShowMode(BatteryMeterView.MODE_ON)
-
-        assertThat(mBatteryMeterView.batteryPercentViewText).isEqualTo("15%")
-        assertThat(mBatteryMeterView.contentDescription).isEqualTo(
-                context.getString(R.string.accessibility_battery_level, 15)
-        )
-    }
-
-    @Test
-    @EnableFlags(FLAG_NEW_STATUS_BAR_ICONS)
     fun changesFromEstimateToPercent_textAndContentDescriptionChanges_flagOn() {
         mBatteryMeterView.onBatteryLevelChanged(15, false)
         mBatteryMeterView.setPercentShowMode(BatteryMeterView.MODE_ESTIMATE)
@@ -193,7 +168,6 @@ class BatteryMeterViewTest : SysuiTestCase() {
     }
 
     @Test
-    @EnableFlags(FLAG_NEW_STATUS_BAR_ICONS)
     fun modeEstimate_batteryPercentView_isNotNull_flagOn() {
         mBatteryMeterView.onBatteryLevelChanged(15, false)
         mBatteryMeterView.setPercentShowMode(BatteryMeterView.MODE_ESTIMATE)
@@ -208,7 +182,6 @@ class BatteryMeterViewTest : SysuiTestCase() {
     }
 
     @Test
-    @EnableFlags(FLAG_NEW_STATUS_BAR_ICONS)
     fun modePercent_batteryPercentView_isNull_flagOn() {
         mBatteryMeterView.onBatteryLevelChanged(15, false)
         mBatteryMeterView.setPercentShowMode(BatteryMeterView.MODE_ON)
@@ -265,18 +238,6 @@ class BatteryMeterViewTest : SysuiTestCase() {
     }
 
     @Test
-    @DisableFlags(FLAG_NEW_STATUS_BAR_ICONS)
-    fun isBatteryDefenderChanged_true_drawableGetsTrue_flagOff() {
-        mBatteryMeterView.setDisplayShieldEnabled(true)
-        val drawable = getBatteryDrawable()
-
-        mBatteryMeterView.onIsBatteryDefenderChanged(true)
-
-        assertThat(drawable.displayShield).isTrue()
-    }
-
-    @Test
-    @EnableFlags(FLAG_NEW_STATUS_BAR_ICONS)
     fun isBatteryDefenderChanged_true_drawableGetsTrue_flagOn() {
         mBatteryMeterView.setDisplayShieldEnabled(true)
 
@@ -286,22 +247,6 @@ class BatteryMeterViewTest : SysuiTestCase() {
     }
 
     @Test
-    @DisableFlags(FLAG_NEW_STATUS_BAR_ICONS)
-    fun isBatteryDefenderChanged_false_drawableGetsFalse_flagOff() {
-        mBatteryMeterView.setDisplayShieldEnabled(true)
-        val drawable = getBatteryDrawable()
-
-        // Start as true
-        mBatteryMeterView.onIsBatteryDefenderChanged(true)
-
-        // Update to false
-        mBatteryMeterView.onIsBatteryDefenderChanged(false)
-
-        assertThat(drawable.displayShield).isFalse()
-    }
-
-    @Test
-    @EnableFlags(FLAG_NEW_STATUS_BAR_ICONS)
     fun isBatteryDefenderChanged_false_drawableGetsFalse_flagOn() {
         mBatteryMeterView.setDisplayShieldEnabled(true)
 
@@ -315,18 +260,6 @@ class BatteryMeterViewTest : SysuiTestCase() {
     }
 
     @Test
-    @DisableFlags(FLAG_NEW_STATUS_BAR_ICONS)
-    fun isBatteryDefenderChanged_true_featureflagOff_drawableGetsFalse_flagOff() {
-        mBatteryMeterView.setDisplayShieldEnabled(false)
-        val drawable = getBatteryDrawable()
-
-        mBatteryMeterView.onIsBatteryDefenderChanged(true)
-
-        assertThat(drawable.displayShield).isFalse()
-    }
-
-    @Test
-    @EnableFlags(FLAG_NEW_STATUS_BAR_ICONS)
     fun isBatteryDefenderChanged_true_featureflagOff_drawableGetsFalse_flagOn() {
         mBatteryMeterView.setDisplayShieldEnabled(false)
 
@@ -336,19 +269,6 @@ class BatteryMeterViewTest : SysuiTestCase() {
     }
 
     @Test
-    @DisableFlags(FLAG_NEW_STATUS_BAR_ICONS)
-    fun isIncompatibleChargingChanged_true_drawableGetsChargingFalse_flagOff() {
-        mBatteryMeterView.onBatteryLevelChanged(45, true)
-        val drawable = getBatteryDrawable()
-
-        mBatteryMeterView.onIsIncompatibleChargingChanged(true)
-
-        assertThat(drawable.getCharging()).isFalse()
-        assertThat(mBatteryMeterView.isCharging).isFalse()
-    }
-
-    @Test
-    @EnableFlags(FLAG_NEW_STATUS_BAR_ICONS)
     fun isIncompatibleChargingChanged_true_drawableGetsChargingFalse_flagOn() {
         mBatteryMeterView.onBatteryLevelChanged(45, true)
 
@@ -359,18 +279,6 @@ class BatteryMeterViewTest : SysuiTestCase() {
     }
 
     @Test
-    @DisableFlags(FLAG_NEW_STATUS_BAR_ICONS)
-    fun isIncompatibleChargingChanged_false_drawableGetsChargingTrue_flagOff() {
-        mBatteryMeterView.onBatteryLevelChanged(45, true)
-        val drawable = getBatteryDrawable()
-
-        mBatteryMeterView.onIsIncompatibleChargingChanged(false)
-
-        assertThat(drawable.getCharging()).isTrue()
-    }
-
-    @Test
-    @EnableFlags(FLAG_NEW_STATUS_BAR_ICONS)
     fun isIncompatibleChargingChanged_false_drawableGetsChargingTrue_flagOn() {
         mBatteryMeterView.onBatteryLevelChanged(45, true)
 
