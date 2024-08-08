@@ -2647,6 +2647,10 @@ public final class SystemServer implements Dumpable {
             mSystemServiceManager.startService(FreeformService.class);
             t.traceEnd();
 
+            t.traceBegin("FreeformService");
+            mSystemServiceManager.startService(FreeformService.class);
+            t.traceEnd();
+
             if (!isWatch) {
                 // We don't run this on watches as there are no plans to use the data logged
                 // on watch devices.
