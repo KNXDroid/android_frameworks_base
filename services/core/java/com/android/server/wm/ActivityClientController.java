@@ -92,7 +92,6 @@ import android.os.RemoteException;
 import android.os.SystemClock;
 import android.os.Trace;
 import android.os.UserHandle;
-import android.provider.Settings;
 import android.service.voice.VoiceInteractionManagerInternal;
 import android.util.Slog;
 import android.view.RemoteAnimationDefinition;
@@ -114,8 +113,6 @@ import com.android.server.utils.quota.Category;
 import com.android.server.utils.quota.CountQuotaTracker;
 import com.android.server.vr.VrManagerInternal;
 
-import com.libremobileos.providers.LMOSettings;
-
 /**
  * Server side implementation for the client activity to interact with system.
  *
@@ -136,7 +133,6 @@ class ActivityClientController extends IActivityClientController.Stub {
     // The timeWindowMs here can not be smaller than QuotaTracker#MIN_WINDOW_SIZE_MS
     private static final long SET_PIP_ASPECT_RATIO_TIME_WINDOW_MS = 60_000;
 
-    private Integer mShouldFinishTaskSettingCache = null;
     /** Wrapper around VoiceInteractionServiceManager. */
     private AssistUtils mAssistUtils;
 
@@ -509,11 +505,10 @@ class ActivityClientController extends IActivityClientController.Stub {
             try {
                 r.setActivityBoost(false);
                 final boolean res;
+                final boolean finishWithRootActivity =
+                        finishTask == Activity.FINISH_TASK_WITH_ROOT_ACTIVITY;
                 mTaskSupervisor.getBackgroundActivityLaunchController()
                         .onActivityRequestedFinishing(r);
-                final boolean isLastRunningActivity = isTopActivityInTaskFragment(r);
-                final boolean finishWithRootActivity = (isLastRunningActivity && shouldFinishTaskOnBackPressed() == 2)
-                        || finishTask == Activity.FINISH_TASK_WITH_ROOT_ACTIVITY;
                 if (finishTask == Activity.FINISH_TASK_WITH_ACTIVITY
                         || (finishWithRootActivity && r == rootR)) {
                     // If requested, remove the task that is associated to this activity only if it
@@ -1692,9 +1687,9 @@ class ActivityClientController extends IActivityClientController.Stub {
         return activity.getTaskFragment().topRunningActivity() == activity;
     }
 
-    private void requestCallbackFinish(IRequestFinishCallback callback, boolean shouldFinishTask) {
+    private void requestCallbackFinish(IRequestFinishCallback callback) {
         try {
-            callback.requestFinish(shouldFinishTask);
+            callback.requestFinish();
         } catch (RemoteException e) {
             Slog.e(TAG, "Failed to invoke request finish callback", e);
         }
@@ -1704,7 +1699,6 @@ class ActivityClientController extends IActivityClientController.Stub {
     public void onBackPressed(IBinder token, IRequestFinishCallback callback) {
         final long origId = Binder.clearCallingIdentity();
         try {
-            final boolean finishTask;
             synchronized (mGlobalLock) {
                 final ActivityRecord r = ActivityRecord.isInRootTaskLocked(token);
                 if (r == null) return;
@@ -1718,15 +1712,14 @@ class ActivityClientController extends IActivityClientController.Stub {
                     // pressed callback.
                     return;
                 }
-                finishTask = shouldFinishTaskOnBackPressed() >= 1;
-                if (!finishTask && shouldMoveTaskToBack(r, root)) {
+                if (shouldMoveTaskToBack(r, root)) {
                     moveActivityTaskToBack(token, true /* nonRoot */);
                     return;
                 }
             }
 
             // The default option for handling the back button is to finish the Activity.
-            requestCallbackFinish(callback, finishTask);
+            requestCallbackFinish(callback);
         } finally {
             Binder.restoreCallingIdentity(origId);
         }
@@ -1766,14 +1759,6 @@ class ActivityClientController extends IActivityClientController.Stub {
                 r.getTask().mAlignActivityLocaleWithTask = true;
             }
         }
-    }
-
-    private int shouldFinishTaskOnBackPressed() {
-        if (mShouldFinishTaskSettingCache == null) {
-            mShouldFinishTaskSettingCache = Settings.System.getInt(mContext.getContentResolver(),
-                                                LMOSettings.System.TRANSIENT_TASK_MODE, 0);
-        }
-        return mShouldFinishTaskSettingCache;
     }
 
     /**
