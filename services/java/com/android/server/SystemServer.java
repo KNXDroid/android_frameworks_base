@@ -163,6 +163,7 @@ import com.android.server.credentials.CredentialManagerService;
 import com.android.server.criticalevents.CriticalEventLog;
 import com.android.server.devicepolicy.DevicePolicyManagerService;
 import com.android.server.devicestate.DeviceStateManagerService;
+import com.android.server.display.AODOnChargeService;
 import com.android.server.display.DisplayManagerService;
 import com.android.server.display.FreeformService;
 import com.android.server.display.color.ColorDisplayService;
@@ -2712,6 +2713,12 @@ public final class SystemServer implements Dumpable {
                     com.android.internal.R.bool.config_mockOplusLinearmotorVibratorService)) {
                 t.traceBegin("StartLinearmotorVibratorService");
                 mSystemServiceManager.startService(LinearmotorVibratorService.class);
+                t.traceEnd();
+            }
+
+            if (context.getResources().getBoolean(R.bool.config_dozeAlwaysOnDisplayAvailable)) {
+                t.traceBegin("AODOnChargeService");
+                mSystemServiceManager.startService(AODOnChargeService.class);
                 t.traceEnd();
             }
         }
