@@ -201,6 +201,9 @@ public final class Zygote {
      */
     public static final int DEBUG_ENABLE_PTRACE = 1 << 25;
 
+    /** Allow the process to set real-time priorities for its threads. */
+    public static final int ALLOW_RT_PRIO = 1 << 31;
+
     /** No external storage should be mounted. */
     public static final int MOUNT_EXTERNAL_NONE = IVold.REMOUNT_MODE_NONE;
     /** Default external storage should be mounted. */
