@@ -1547,7 +1547,8 @@ public class ActivityTaskManagerService extends IActivityTaskManager.Stub {
 
 
             final ActivityRecord[] outActivity = new ActivityRecord[1];
-            getActivityStartController().obtainStarter(intent, "dream")
+            final int res = getActivityStartController()
+                    .obtainStarter(intent, "dream")
                     .setCallingUid(callingUid)
                     .setCallingPid(callingPid)
                     .setCallingPackage(intent.getPackage())
@@ -1561,9 +1562,11 @@ public class ActivityTaskManagerService extends IActivityTaskManager.Stub {
                     .execute();
 
             final ActivityRecord started = outActivity[0];
-            final IAppTask appTask = started == null ? null :
-                    new AppTaskImpl(this, started.getTask().mTaskId, callingUid);
-            return appTask;
+            if (started == null || !ActivityManager.isStartResultSuccessful(res)) {
+                // start the dream activity failed.
+                return null;
+            }
+            return new AppTaskImpl(this, started.getTask().mTaskId, callingUid);
         }
     }
 
