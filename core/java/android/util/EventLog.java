@@ -337,7 +337,6 @@ public class EventLog {
      * @param value A value to log
      * @return The number of bytes written
      */
-    @RavenwoodRedirect
     public static int writeEvent(int tag, int value) {
         if (!Build.IS_DEBUGGABLE) {
             return 0;
