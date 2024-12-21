@@ -3452,7 +3452,6 @@ public class OomAdjuster {
                         + " to " + curSchedGroup + ": " + state.getAdjType();
                 reportOomAdjMessageLocked(TAG_OOM_ADJ, msg);
             }
-<<<<<<< HEAD
             int processGroup;
             switch (curSchedGroup) {
                 case SCHED_GROUP_BACKGROUND:
@@ -3481,63 +3480,6 @@ public class OomAdjuster {
                             // Switch UI pipeline for app to SCHED_FIFO
                             state.setSavedPriority(Process.getThreadPriority(app.getPid()));
                             ActivityManagerService.setFifoPriority(app, true /* enable */);
-=======
-            if (app.getWaitingToKill() != null && app.mReceivers.numberOfCurReceivers() == 0
-                    && ActivityManager.isProcStateBackground(state.getSetProcState())
-                    && !state.hasStartedServices()) {
-                app.killLocked(app.getWaitingToKill(), ApplicationExitInfo.REASON_USER_REQUESTED,
-                        ApplicationExitInfo.SUBREASON_REMOVE_TASK, true);
-                success = false;
-            } else {
-                int processGroup;
-                switch (curSchedGroup) {
-                    case SCHED_GROUP_BACKGROUND:
-                        processGroup = THREAD_GROUP_BACKGROUND;
-                        break;
-                    case SCHED_GROUP_TOP_APP:
-                    case SCHED_GROUP_TOP_APP_BOUND:
-                        processGroup = THREAD_GROUP_TOP_APP;
-                        break;
-                    case SCHED_GROUP_RESTRICTED:
-                        processGroup = THREAD_GROUP_RESTRICTED;
-                        break;
-                    default:
-                        processGroup = THREAD_GROUP_DEFAULT;
-                        break;
-                }
-                mProcessGroupHandler.sendMessage(mProcessGroupHandler.obtainMessage(
-                        0 /* unused */, app.getPid(), processGroup, app.processName));
-                try {
-                    final int renderThreadTid = app.getRenderThreadTid();
-                    if (curSchedGroup == SCHED_GROUP_TOP_APP) {
-                        // do nothing if we already switched to RT
-                        if (oldSchedGroup != SCHED_GROUP_TOP_APP) {
-                            app.getWindowProcessController().onTopProcChanged();
-                            if (app.useFifoUiScheduling()) {
-                                // Switch UI pipeline for app to SCHED_FIFO
-                                state.setSavedPriority(Process.getThreadPriority(app.getPid()));
-                                ActivityManagerService.setFifoPriority(app, true /* enable */);
-                            } else {
-                                // Boost priority for top app UI and render threads
-                                setThreadPriority(app.getPid(), THREAD_PRIORITY_TOP_APP_BOOST);
-                                if (renderThreadTid != 0) {
-                                    try {
-                                        setThreadPriority(renderThreadTid,
-                                                THREAD_PRIORITY_TOP_APP_BOOST);
-                                    } catch (IllegalArgumentException e) {
-                                        // thread died, ignore
-                                    }
-                                }
-                            }
-                        }
-                    } else if (oldSchedGroup == SCHED_GROUP_TOP_APP
-                            && curSchedGroup != SCHED_GROUP_TOP_APP) {
-                        app.getWindowProcessController().onTopProcChanged();
-                        if (app.useFifoUiScheduling()) {
-                            // Reset UI pipeline to SCHED_OTHER
-                            ActivityManagerService.setFifoPriority(app, false /* enable */);
-                            setThreadPriority(app.getPid(), state.getSavedPriority());
->>>>>>> ec5d674103de (Use realtime priority for systemui and recents(home))
                         } else {
                             // Boost priority for top app UI and render threads
                             setThreadPriority(app.getPid(), THREAD_PRIORITY_TOP_APP_BOOST);
