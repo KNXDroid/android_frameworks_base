@@ -28,3 +28,4 @@ public class KeyguardConstants {
      * be used temporarily for debugging.
      */
     public static final boolean DEBUG = false;
+}
