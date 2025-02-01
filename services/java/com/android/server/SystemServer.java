@@ -419,8 +419,6 @@ public final class SystemServer implements Dumpable {
             "com.android.safetycenter.SafetyCenterService";
     private static final String SDK_SANDBOX_MANAGER_SERVICE_CLASS =
             "com.android.server.sdksandbox.SdkSandboxManagerService$Lifecycle";
-    private static final String AD_SERVICES_MANAGER_SERVICE_CLASS =
-            "com.android.server.adservices.AdServicesManagerService$Lifecycle";
     private static final String ON_DEVICE_INTELLIGENCE_MANAGER_SERVICE_CLASS =
             "com.android.server.ondeviceintelligence.OnDeviceIntelligenceManagerService";
     private static final String ON_DEVICE_PERSONALIZATION_SYSTEM_SERVICE_CLASS =
@@ -3042,7 +3040,7 @@ public final class SystemServer implements Dumpable {
         t.traceEnd();
 
         // AdServicesManagerService (PP API service)
-        if (!isWatch || !android.server.Flags.removeAdServicesManagerServiceFromWear()
+        /*if (!isWatch || !android.server.Flags.removeAdServicesManagerServiceFromWear()
                 || SystemProperties.getBoolean("ro.system_settings.service.adservices_enabled",
                 true)) {
             t.traceBegin("StartAdServicesManagerService");
@@ -3053,7 +3051,7 @@ public final class SystemServer implements Dumpable {
             }
         } else {
             Slog.d(TAG, "Not starting AdServicesManagerService");
-        }
+        }*/
 
         // OnDevicePersonalizationSystemService
         if (SystemProperties.getBoolean("ro.system_settings.service.odp_enabled", true)) {

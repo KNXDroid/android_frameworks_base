@@ -1993,7 +1993,6 @@ public final class SystemServiceRegistry {
             RoleFrameworkInitializer.registerServiceWrappers();
             SchedulingFrameworkInitializer.registerServiceWrappers();
             SdkSandboxManagerFrameworkInitializer.registerServiceWrappers();
-            AdServicesFrameworkInitializer.registerServiceWrappers();
             UwbFrameworkInitializer.registerServiceWrappers();
             SafetyCenterFrameworkInitializer.registerServiceWrappers();
             ConnectivityFrameworkInitializerTiramisu.registerServiceWrappers();
