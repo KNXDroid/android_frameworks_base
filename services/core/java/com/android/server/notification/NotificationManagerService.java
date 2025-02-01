@@ -3056,12 +3056,6 @@ public class NotificationManagerService extends SystemService {
             List<ModuleInfo> moduleInfoList =
             mPackageManagerClient.getInstalledModules(
                 PackageManager.MATCH_DEBUG_TRIAGED_MISSING);
-            // Cache adservices module info
-            for (ModuleInfo mi : moduleInfoList) {
-                if (Objects.equals(mi.getApexModuleName(), ADSERVICES_MODULE_PKG_NAME)) {
-                    mAdservicesModuleInfo = mi;
-                }
-            }
         } else if (phase == SystemService.PHASE_ACTIVITY_MANAGER_READY) {
             mSnoozeHelper.scheduleRepostsForPersistedNotifications(System.currentTimeMillis());
         } else if (phase == SystemService.PHASE_DEVICE_SPECIFIC_SERVICES_READY) {
@@ -8107,8 +8101,7 @@ public class NotificationManagerService extends SystemService {
     private boolean canBeNonDismissible(ApplicationInfo ai, Notification notification) {
         return notification.isMediaNotification() || isEnterpriseExempted(ai)
                 || notification.isStyle(Notification.CallStyle.class)
-                || isDefaultSearchSelectorPackage(ai.packageName)
-                || isDefaultAdservicesPackage(ai.packageName);
+                || isDefaultSearchSelectorPackage(ai.packageName);
     }
 
     private boolean isDefaultSearchSelectorPackage(String pkg) {
@@ -8116,15 +8109,6 @@ public class NotificationManagerService extends SystemService {
     }
 
     private boolean isDefaultAdservicesPackage(String pkg) {
-        if (mAdservicesModuleInfo == null) {
-            return false;
-        }
-        // Handles the special package structure for mainline modules
-        for (String apkName : mAdservicesModuleInfo.getApkInApexPackageNames()) {
-            if (Objects.equals(apkName, pkg)) {
-                return true;
-            }
-        }
         return false;
     }
 
