@@ -1497,15 +1497,19 @@ public final class SystemServer implements Dumpable {
         mSystemServiceManager.startService(CachedDeviceStateService.class);
         t.traceEnd();
 
-        // Tracks cpu time spent in binder calls
-        t.traceBegin("StartBinderCallsStatsService");
-        mSystemServiceManager.startService(BinderCallsStatsService.LifeCycle.class);
-        t.traceEnd();
+        if (Build.IS_ENG) {
+            // Tracks cpu time spent in binder calls
+            t.traceBegin("StartBinderCallsStatsService");
+            mSystemServiceManager.startService(BinderCallsStatsService.LifeCycle.class);
+            t.traceEnd();
+        }
 
-        // Tracks time spent in handling messages in handlers.
-        t.traceBegin("StartLooperStatsService");
-        mSystemServiceManager.startService(LooperStatsService.Lifecycle.class);
-        t.traceEnd();
+        if (Build.IS_ENG) {
+            // Tracks time spent in handling messages in handlers.
+            t.traceBegin("StartLooperStatsService");
+            mSystemServiceManager.startService(LooperStatsService.Lifecycle.class);
+            t.traceEnd();
+        }
 
         // Manages apk rollbacks.
         t.traceBegin("StartRollbackManagerService");
@@ -1517,10 +1521,12 @@ public final class SystemServer implements Dumpable {
         mSystemServiceManager.startService(NativeTombstoneManagerService.class);
         t.traceEnd();
 
-        // Service to capture bugreports.
-        t.traceBegin("StartBugreportManagerService");
-        mSystemServiceManager.startService(BugreportManagerService.class);
-        t.traceEnd();
+        if (Build.IS_ENG) {
+            // Service to capture bugreports.
+            t.traceBegin("StartBugreportManagerService");
+            mSystemServiceManager.startService(BugreportManagerService.class);
+            t.traceEnd();
+        }
 
         // Service for GPU and GPU driver.
         t.traceBegin("GpuService");
@@ -1787,9 +1793,11 @@ public final class SystemServer implements Dumpable {
                 t.traceEnd();
             }
 
-            t.traceBegin("IpConnectivityMetrics");
-            mSystemServiceManager.startService(IpConnectivityMetrics.class);
-            t.traceEnd();
+            //if (Build.IS_ENG) {
+                t.traceBegin("IpConnectivityMetrics");
+                mSystemServiceManager.startService(IpConnectivityMetrics.class);
+                t.traceEnd();
+            //}
 
             t.traceBegin("NetworkWatchlistService");
             mSystemServiceManager.startService(NetworkWatchlistService.Lifecycle.class);
@@ -2611,13 +2619,15 @@ public final class SystemServer implements Dumpable {
                 t.traceEnd();
             }
 
-            t.traceBegin("StartDiskStatsService");
-            try {
-                ServiceManager.addService("diskstats", new DiskStatsService(context));
-            } catch (Throwable e) {
-                reportWtf("starting DiskStats Service", e);
-            }
-            t.traceEnd();
+            //if (Build.IS_ENG) {
+                t.traceBegin("StartDiskStatsService");
+                try {
+                    ServiceManager.addService("diskstats", new DiskStatsService(context));
+                } catch (Throwable e) {
+                    reportWtf("starting DiskStats Service", e);
+                }
+                t.traceEnd();
+            //}
 
             t.traceBegin("RuntimeService");
             try {
@@ -2661,10 +2671,12 @@ public final class SystemServer implements Dumpable {
             mSystemServiceManager.startService(DreamManagerService.class);
             t.traceEnd();
 
-            t.traceBegin("AddGraphicsStatsService");
-            ServiceManager.addService(GraphicsStatsService.GRAPHICS_STATS_SERVICE,
-                    new GraphicsStatsService(context));
-            t.traceEnd();
+            if (Build.IS_ENG) {
+                t.traceBegin("AddGraphicsStatsService");
+                ServiceManager.addService(GraphicsStatsService.GRAPHICS_STATS_SERVICE,
+                        new GraphicsStatsService(context));
+                t.traceEnd();
+            }
 
             if (CoverageService.ENABLED) {
                 t.traceBegin("AddCoverageService");
@@ -3007,12 +3019,13 @@ public final class SystemServer implements Dumpable {
             t.traceEnd();
         }
 
-        // Statsd helper
-        t.traceBegin("StartStatsCompanion");
-        mSystemServiceManager.startServiceFromJar(
-                STATS_COMPANION_LIFECYCLE_CLASS, STATS_COMPANION_APEX_PATH);
-        t.traceEnd();
-
+        //if (Build.IS_ENG) {
+            // Statsd helper
+            t.traceBegin("StartStatsCompanion");
+            mSystemServiceManager.startServiceFromJar(
+                    STATS_COMPANION_LIFECYCLE_CLASS, STATS_COMPANION_APEX_PATH);
+            t.traceEnd();
+        //}
         // Reboot Readiness
         t.traceBegin("StartRebootReadinessManagerService");
         mSystemServiceManager.startServiceFromJar(
@@ -3023,12 +3036,12 @@ public final class SystemServer implements Dumpable {
         t.traceBegin("StartStatsPullAtomService");
         mSystemServiceManager.startService(StatsPullAtomService.class);
         t.traceEnd();
-
-        // Log atoms to statsd from bootstrap processes.
-        t.traceBegin("StatsBootstrapAtomService");
-        mSystemServiceManager.startService(StatsBootstrapAtomService.Lifecycle.class);
-        t.traceEnd();
-
+        //if (Build.IS_ENG) {
+            // Log atoms to statsd from bootstrap processes.
+            t.traceBegin("StatsBootstrapAtomService");
+            mSystemServiceManager.startService(StatsBootstrapAtomService.Lifecycle.class);
+            t.traceEnd();
+        //}
         // Incidentd and dumpstated helper
         t.traceBegin("StartIncidentCompanionService");
         mSystemServiceManager.startService(IncidentCompanionService.class);
@@ -3061,43 +3074,48 @@ public final class SystemServer implements Dumpable {
         }
 
         // Profiling
-        t.traceBegin("StartProfilingCompanion");
-        mSystemServiceManager.startServiceFromJar(PROFILING_SERVICE_LIFECYCLE_CLASS,
-                PROFILING_SERVICE_JAR_PATH);
-        t.traceEnd();
+        if (Build.IS_ENG) {
+            t.traceBegin("StartProfilingCompanion");
+            mSystemServiceManager.startServiceFromJar(PROFILING_SERVICE_LIFECYCLE_CLASS,
+                    PROFILING_SERVICE_JAR_PATH);
+            t.traceEnd();
+        }
 
         // Anomaly Detector
-        if (android.os.profiling.anomaly.flags.Flags.anomalyDetectorCore()) {
-            t.traceBegin("StartAnomalyDetectorService");
-            mSystemServiceManager.startService(ANOMALY_DETECTOR_SERVICE_CLASS);
-            t.traceEnd();
+        if (Build.IS_ENG) {
+            if (android.os.profiling.anomaly.flags.Flags.anomalyDetectorCore()) {
+                t.traceBegin("StartAnomalyDetectorService");
+                mSystemServiceManager.startService(ANOMALY_DETECTOR_SERVICE_CLASS);
+                t.traceEnd();
 
-            t.traceBegin("StartSignalCollectorService");
-            try {
-                mSystemServiceManager.startService(SIGNAL_COLLECTOR_SERVICE_CLASS);
-            } catch (Throwable e) {
-                reportWtf("starting SignalCollectorService", e);
+                t.traceBegin("StartSignalCollectorService");
+                try {
+                    mSystemServiceManager.startService(SIGNAL_COLLECTOR_SERVICE_CLASS);
+                } catch (Throwable e) {
+                    reportWtf("starting SignalCollectorService", e);
+                }
+                t.traceEnd();
             }
-            t.traceEnd();
         }
 
         // UprobeStats
-        if (android.security.Flags.serviceUprobestats()) {
-            t.traceBegin("StartUprobeStatsService");
-            // The service class is defined in a mainline module, and is not providing any
-            // core, user facing functionality. It is only used for collecting telemetry
-            // and anti-abuse. Thus, catch any startup exceptions and report them as WTFs.
-            try {
-                mSystemServiceManager.startServiceFromJar(
-                        UPROBESTATS_SERVICE_CLASS, UPROBESTATS_SERVICE_JAR_PATH);
-            } catch (Throwable e) {
-                reportWtf("StartUprobeStatsService", e);
+        if (Build.IS_ENG) {
+            if (android.security.Flags.serviceUprobestats()) {
+                t.traceBegin("StartUprobeStatsService");
+                // The service class is defined in a mainline module, and is not providing any
+                // core, user facing functionality. It is only used for collecting telemetry
+                // and anti-abuse. Thus, catch any startup exceptions and report them as WTFs.
+                try {
+                    mSystemServiceManager.startServiceFromJar(
+                            UPROBESTATS_SERVICE_CLASS, UPROBESTATS_SERVICE_JAR_PATH);
+                } catch (Throwable e) {
+                    reportWtf("StartUprobeStatsService", e);
+                }
+                t.traceEnd();
+            } else if (Build.IS_DEBUGGABLE) {
+                Slog.d(TAG, "UprobeStatsService disabled by flag");
             }
-            t.traceEnd();
-        } else if (Build.IS_DEBUGGABLE) {
-            Slog.d(TAG, "UprobeStatsService disabled by flag");
         }
-
         if (safeMode) {
             mActivityManagerService.enterSafeMode();
         }
@@ -3152,11 +3170,12 @@ public final class SystemServer implements Dumpable {
         t.traceBegin("AppServiceManager");
         mSystemServiceManager.startService(AppBindingService.Lifecycle.class);
         t.traceEnd();
-
-        // Perfetto TracingServiceProxy
-        t.traceBegin("startTracingServiceProxy");
-        mSystemServiceManager.startService(TracingServiceProxy.class);
-        t.traceEnd();
+        if (Build.IS_ENG) {
+            // Perfetto TracingServiceProxy
+            t.traceBegin("startTracingServiceProxy");
+            mSystemServiceManager.startService(TracingServiceProxy.class);
+            t.traceEnd();
+        }
 
         // UprobeStats DynamicInstrumentationManager
         if (android.uprobestats.flags.Flags.executableMethodFileOffsets()) {
@@ -3656,14 +3675,15 @@ public final class SystemServer implements Dumpable {
                 setIncrementalServiceSystemReady(mIncrementalServiceHandle);
                 t.traceEnd();
             }
-
-            t.traceBegin("OdsignStatsLogger");
-            try {
-                OdsignStatsLogger.triggerStatsWrite();
-            } catch (Throwable e) {
-                reportWtf("Triggering OdsignStatsLogger", e);
+            if (Build.IS_ENG) {
+                t.traceBegin("OdsignStatsLogger");
+                try {
+                    OdsignStatsLogger.triggerStatsWrite();
+                } catch (Throwable e) {
+                    reportWtf("Triggering OdsignStatsLogger", e);
+                }
+                t.traceEnd();
             }
-            t.traceEnd();
         }, t);
 
         t.traceBegin("LockSettingsThirdPartyAppsStarted");
