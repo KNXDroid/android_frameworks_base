@@ -386,8 +386,6 @@ public final class SystemServer implements Dumpable {
             "com.android.safetycenter.SafetyCenterService";
     private static final String SDK_SANDBOX_MANAGER_SERVICE_CLASS =
             "com.android.server.sdksandbox.SdkSandboxManagerService$Lifecycle";
-    private static final String AD_SERVICES_MANAGER_SERVICE_CLASS =
-            "com.android.server.adservices.AdServicesManagerService$Lifecycle";
     private static final String ON_DEVICE_PERSONALIZATION_SYSTEM_SERVICE_CLASS =
             "com.android.server.ondevicepersonalization."
                     + "OnDevicePersonalizationSystemService$Lifecycle";
@@ -2800,11 +2798,6 @@ public final class SystemServer implements Dumpable {
         // SdkSandboxManagerService
         t.traceBegin("StarSdkSandboxManagerService");
         mSystemServiceManager.startService(SDK_SANDBOX_MANAGER_SERVICE_CLASS);
-        t.traceEnd();
-
-        // AdServicesManagerService (PP API service)
-        t.traceBegin("StartAdServicesManagerService");
-        mSystemServiceManager.startService(AD_SERVICES_MANAGER_SERVICE_CLASS);
         t.traceEnd();
 
         // OnDevicePersonalizationSystemService
