@@ -39,7 +39,6 @@ final class WritableNamespacePrefixes {
                 "activity_manager",
                 "activity_manager_native_boot",
                 "adaptive_charging",
-                "adservices",
                 "aiai_controlled_releases",
                 "alarm_manager",
                 "app_cloning",
