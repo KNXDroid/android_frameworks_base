@@ -108,7 +108,6 @@ float Properties::maxHdrHeadroomOn8bit = 5.f;  // TODO: Refine this number
 
 bool Properties::clipSurfaceViews = false;
 bool Properties::hdr10bitPlus = false;
-bool Properties::skipTelemetry = false;
 bool Properties::resampleGainmapRegions = false;
 
 int Properties::timeoutMultiplier = 1;
@@ -189,8 +188,6 @@ bool Properties::load() {
                                                    hwui_flags::resample_gainmap_regions());
 
     timeoutMultiplier = android::base::GetIntProperty("ro.hw_timeout_multiplier", 1);
-    skipTelemetry = base::GetBoolProperty(PROPERTY_SKIP_EGLMANAGER_TELEMETRY,
-                                          hwui_flags::skip_eglmanager_telemetry());
 
     return (prevDebugLayersUpdates != debugLayersUpdates) || (prevDebugOverdraw != debugOverdraw);
 }
