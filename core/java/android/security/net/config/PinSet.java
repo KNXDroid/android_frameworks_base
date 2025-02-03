@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 
 /** @hide */
 public final class PinSet {
-    private static Set<String> algorithms;
     public static final PinSet EMPTY_PINSET =
             new PinSet(Collections.<Pin>emptySet(), Long.MAX_VALUE);
     public final long expirationTime;
