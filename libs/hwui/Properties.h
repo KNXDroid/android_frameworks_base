@@ -234,8 +234,6 @@ enum DebugLevel {
  */
 #define PROPERTY_INITIALIZE_GL_ALWAYS "debug.hwui.initialize_gl_always"
 
-#define PROPERTY_SKIP_EGLMANAGER_TELEMETRY "debug.hwui.skip_eglmanager_telemetry"
-
 #define PROPERTY_EARLY_PRELOAD_GL_CONTEXT "debug.hwui.early_preload_gl_context"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -346,7 +344,6 @@ public:
 
     static bool clipSurfaceViews;
     static bool hdr10bitPlus;
-    static bool skipTelemetry;
     static bool queryGlobalPriority;
 
     static int timeoutMultiplier;
