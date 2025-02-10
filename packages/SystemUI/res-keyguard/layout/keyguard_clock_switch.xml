@@ -51,12 +51,6 @@
         android:layout_alignParentStart="true"
         android:layout_below="@id/lockscreen_clock_view">
 
-        <include
-            android:id="@+id/aod_ls"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            layout="@layout/keyguard_aod_style" />
-
       <include layout="@layout/keyguard_slice_view"
                android:id="@+id/keyguard_slice_view"
                android:layout_width="match_parent"
