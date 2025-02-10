@@ -56,26 +56,6 @@
                android:layout_width="match_parent"
                android:layout_height="wrap_content" />
 
-<<<<<<< HEAD
-=======
-      <include layout="@layout/keyguard_weather"
-               android:id="@+id/keyguard_weather"
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content" />
-
-      <include 
-        android:id="@+id/aod_ls"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        layout="@layout/keyguard_aod_style" />
-
-      <include 
-        android:id="@+id/clock_ls"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        layout="@layout/keyguard_clock_style" />
-
->>>>>>> e22eb4d42588 (SystemUI: Introduce AOD styles [1/2])
       <com.android.systemui.statusbar.phone.NotificationIconContainer
           android:id="@+id/left_aligned_notification_icon_container"
           android:layout_width="match_parent"
