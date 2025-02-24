@@ -101,10 +101,28 @@ public class OnGoingActionProgressController implements NotificationListener.Not
 
     /** Starts tracking progress of certain notification @AsyncUnsafe */
     private void trackProgress(final StatusBarNotification sbn) {
+        Notification notification = sbn.getNotification();
+
+        // Check if the notification is a media notification by examining its actions or extras
+        Bundle extras = notification.extras;
+        boolean isMediaNotification = false;
+
+        if (extras != null) {
+            // Check for media session token or other media-related extras
+            if (extras.containsKey("android.mediaSession")) {
+                isMediaNotification = true;
+            }
+            // Add more checks as needed based on your requirements
+        }
+
+        if (isMediaNotification) {
+            // Skip tracking for media notifications
+            return;
+        }
+
         // Here we set progress tracking and update view if needed
         mIsTrackingProgress = true;
         mTrackedNotificationKey = sbn.getKey();
-        Notification notification = sbn.getNotification();
         mCurrentProgressMax = notification.extras.getInt(Notification.EXTRA_PROGRESS_MAX, 100);
         mCurrentProgress = notification.extras.getInt(Notification.EXTRA_PROGRESS, 0);
         IconFetcher.AdaptiveDrawableResult drawable =
