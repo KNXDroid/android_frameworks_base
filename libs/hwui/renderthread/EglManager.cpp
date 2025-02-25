@@ -367,8 +367,6 @@ void EglManager::createContext() {
         contextAttributes.push_back(EGL_CONTEXT_PRIORITY_LEVEL_IMG);
         contextAttributes.push_back(Properties::contextPriority);
     }
-    contextAttributes.push_back(EGL_TELEMETRY_HINT_ANDROID);
-    contextAttributes.push_back(android::GpuStatsInfo::SKIP_TELEMETRY);
     contextAttributes.push_back(EGL_NONE);
     mEglContext = eglCreateContext(
             mEglDisplay, EglExtensions.noConfigContext ? ((EGLConfig) nullptr) : mEglConfig,
