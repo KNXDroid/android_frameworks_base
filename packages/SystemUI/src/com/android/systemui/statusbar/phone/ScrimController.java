@@ -35,6 +35,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.util.MathUtils;
 import android.util.Pair;
+import android.view.CrossWindowBlurListeners;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
@@ -215,6 +216,8 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
      */
     public static final float BUSY_SCRIM_ALPHA = 1f;
 
+    private float mCustomScrimAlpha = 0.9f;
+
     /**
      * Scrim opacity that can have text on top.
      */
@@ -375,6 +378,8 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
         mLargeScreenShadeInterpolator = largeScreenShadeInterpolator;
         mBlurConfig = blurConfig;
         mWindowRootViewBlurInteractor = windowRootViewBlurInteractor;
+        CrossWindowBlurListeners mBlurSupport = CrossWindowBlurListeners.getInstance();
+        mCustomScrimAlpha = mBlurSupport.isCrossWindowBlurEnabled() ? 0.8f : 1.0f;
 
         mKeyguardStateController = keyguardStateController;
         mDarkenWhileDragging = !mKeyguardStateController.canDismissLockScreen();
@@ -439,6 +444,7 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
                     this::isBlurCurrentlySupported);
             states[i].setScrimBehindAlphaKeyguard(mScrimBehindAlphaKeyguard);
             states[i].setDefaultScrimAlpha(getDefaultScrimAlpha());
+            states[i].setQSClipScrimAlpha(mCustomScrimAlpha);
         }
 
         mTransparentScrimBackground = notificationsScrim.getResources()

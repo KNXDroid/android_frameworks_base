@@ -129,10 +129,10 @@ public class QuickQSPanel extends QSPanel {
     @Override
     public void setVisibility(int visibility) {
         if (mDisabledByPolicy) {
-            if (getVisibility() == View.GONE) {
+            if (getVisibility() == GONE) {
                 return;
             }
-            visibility = View.GONE;
+            visibility = GONE;
         }
         super.setVisibility(visibility);
     }

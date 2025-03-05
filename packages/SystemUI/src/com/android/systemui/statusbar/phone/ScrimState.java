@@ -98,12 +98,12 @@ public enum ScrimState {
             } else {
                 mFrontTint = mBackgroundColor;
                 mBehindTint = mBackgroundColor;
-                mNotifTint = mClipQsScrim ? mBackgroundColor : Color.TRANSPARENT;
+                mNotifTint = Color.TRANSPARENT;
                 mFrontAlpha = 0;
-                mBehindAlpha = mClipQsScrim ? 1 : mScrimBehindAlphaKeyguard;
+                mBehindAlpha = mClipQsScrim ? mQSClipScrimAlpha : mScrimBehindAlphaKeyguard;
                 mNotifAlpha = mClipQsScrim ? mScrimBehindAlphaKeyguard : 0;
                 if (mClipQsScrim) {
-                    updateScrimColor(mScrimBehind, 1f /* alpha */, mBackgroundColor);
+                    updateScrimColor(mScrimBehind, mQSClipScrimAlpha /* alpha */, mBackgroundColor);
                 }
             }
 
@@ -123,9 +123,9 @@ public enum ScrimState {
                 mFrontAlpha = 0f;
                 return;
             }
-            mBehindAlpha = mClipQsScrim ? 1 : mDefaultScrimAlpha;
+            mBehindAlpha = mClipQsScrim ? mQSClipScrimAlpha : mDefaultScrimAlpha;
             mBehindTint = mClipQsScrim ? mBackgroundColor : mSurfaceColor;
-            mNotifAlpha = mClipQsScrim ? mDefaultScrimAlpha : 0;
+            mNotifAlpha = mClipQsScrim ? mQSClipScrimAlpha : 0;
             mNotifTint = Color.TRANSPARENT;
             mFrontAlpha = 0f;
         }
@@ -201,7 +201,7 @@ public enum ScrimState {
                     // This is only required until shade blur flag is fully enabled, shade is always
                     // opaque when shade blur is not enabled, and mClipQsScrim is always false.
                     mBehindAlpha = 1f;
-                    mNotifAlpha = 1f;
+                    mNotifAlpha = mQSClipScrimAlpha;
                     mFrontAlpha = 0f;
                     mBehindTint = mBackgroundColor;
                     return;
@@ -212,7 +212,7 @@ public enum ScrimState {
                 mBehindTint = mClipQsScrim ? Color.TRANSPARENT : mBackgroundColor;
 
                 if (mClipQsScrim) {
-                    updateScrimColor(mScrimBehind, 1f /* alpha */, mBackgroundColor);
+                    updateScrimColor(mScrimBehind, mQSClipScrimAlpha /* alpha */, mBackgroundColor);
                 }
             }
         }
@@ -292,7 +292,7 @@ public enum ScrimState {
         @Override
         public void prepare(ScrimState previousState) {
             // State that UI will sync to.
-            mBehindAlpha = mClipQsScrim ? 1 : 0;
+            mBehindAlpha = mClipQsScrim ? mQSClipScrimAlpha : 0;
             mNotifAlpha = 0;
             mFrontAlpha = 0;
             mAnimationDuration = mKeyguardFadingAway
@@ -332,7 +332,7 @@ public enum ScrimState {
             }
 
             if (mClipQsScrim) {
-                updateScrimColor(mScrimBehind, 1f /* alpha */, mBackgroundColor);
+                updateScrimColor(mScrimBehind, mQSClipScrimAlpha /* alpha */, mBackgroundColor);
             }
         }
     },
@@ -412,6 +412,7 @@ public enum ScrimState {
 
     float mScrimBehindAlphaKeyguard;
     float mDefaultScrimAlpha;
+    float mQSClipScrimAlpha;
     ScrimView mScrimInFront;
     ScrimView mScrimBehind;
 
@@ -521,6 +522,10 @@ public enum ScrimState {
 
     public void setSurfaceColor(int surfaceColor) {
         mSurfaceColor = surfaceColor;
+    }
+
+    public void setQSClipScrimAlpha(float qsClipScrimAlpha) {
+        mQSClipScrimAlpha = qsClipScrimAlpha;
     }
 
     public void setLaunchingAffordanceWithPreview(boolean launchingAffordanceWithPreview) {
