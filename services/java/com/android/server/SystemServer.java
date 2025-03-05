@@ -856,7 +856,7 @@ public final class SystemServer implements Dumpable {
             BaseBundle.setShouldDefuse(true);
 
             // Within the system server, when parceling exceptions, include the stack trace
-            Parcel.setStackTraceParceling(true);
+            Parcel.setStackTraceParceling(false);
 
             // Ensure binder calls into the system always run at foreground priority.
             BinderInternal.disableBackgroundScheduling(true);
@@ -877,9 +877,10 @@ public final class SystemServer implements Dumpable {
             // Initialize native services.
             System.loadLibrary("android_servers");
 
-            // Allow heap / perf profiling.
-            initZygoteChildHeapProfiling();
-
+            if (!Build.IS_USER) {
+                // Allow heap / perf profiling.
+                initZygoteChildHeapProfiling();
+            }
             // Debug builds - spawn a thread to monitor for fd leaks.
             if (Build.IS_ENG) {
                 spawnFdLeakCheckThread();
@@ -2821,7 +2822,7 @@ public final class SystemServer implements Dumpable {
             t.traceEnd();
         }
 
-        if (Build.IS_ENG) {
+        if (!Build.IS_USER) {
             // Profiling
             if (android.server.Flags.telemetryApisService()) {
                 t.traceBegin("StartProfilingCompanion");
@@ -2881,7 +2882,7 @@ public final class SystemServer implements Dumpable {
         t.traceBegin("AppServiceManager");
         mSystemServiceManager.startService(AppBindingService.Lifecycle.class);
         t.traceEnd();
-        if (Build.IS_ENG) {
+        if (!Build.IS_USER) {
             // Perfetto TracingServiceProxy
             t.traceBegin("startTracingServiceProxy");
             mSystemServiceManager.startService(TracingServiceProxy.class);
@@ -3371,19 +3372,21 @@ public final class SystemServer implements Dumpable {
                 t.traceEnd();
             }
 
-            t.traceBegin("IncidentDaemonReady");
-            try {
-                // TODO: Switch from checkService to getService once it's always
-                // in the build and should reliably be there.
-                final IIncidentManager incident = IIncidentManager.Stub.asInterface(
-                        ServiceManager.getService(Context.INCIDENT_SERVICE));
-                if (incident != null) {
-                    incident.systemRunning();
+            if (!Build.IS_USER) {
+                t.traceBegin("IncidentDaemonReady");
+                try {
+                    // TODO: Switch from checkService to getService once it's always
+                    // in the build and should reliably be there.
+                    final IIncidentManager incident = IIncidentManager.Stub.asInterface(
+                            ServiceManager.getService(Context.INCIDENT_SERVICE));
+                    if (incident != null) {
+                        incident.systemRunning();
+                    }
+                } catch (Throwable e) {
+                    reportWtf("Notifying incident daemon running", e);
                 }
-            } catch (Throwable e) {
-                reportWtf("Notifying incident daemon running", e);
+                t.traceEnd();
             }
-            t.traceEnd();
 
             if (mIncrementalServiceHandle != 0) {
                 t.traceBegin("MakeIncrementalServiceReady");
