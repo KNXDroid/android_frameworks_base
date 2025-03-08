@@ -12,6 +12,15 @@ android_app {
     defaults: ["platform_app_defaults"],
     manifest: "AndroidManifest.xml",
 
+    optimize: {
+        enabled: true,
+        optimize: true,
+        shrink: true,
+        shrink_resources: true,
+        optimized_shrink_resources: true,
+        ignore_warnings: false,
+    },
+
     static_libs: [
         "androidx.appcompat_appcompat",
     ],

@@ -40,11 +40,19 @@ android_app {
         ":validate_input_devices_keymaps",
     ],
 
+    optimize: {
+        enabled: true,
+        optimize: true,
+        optimized_shrink_resources: true,
+        obfuscate: true,
+    },
+
     resource_dirs: ["res"],
 
     sdk_version: "current",
     certificate: "platform",
     privileged: true,
+
 }
 
 // Validate all key maps.

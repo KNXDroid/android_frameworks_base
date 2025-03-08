@@ -13,6 +13,15 @@ android_app {
 
     manifest: "AndroidManifest.xml",
 
+    optimize: {
+        enabled: true,
+        optimize: true,
+        shrink: true,
+        shrink_resources: true,
+        optimized_shrink_resources: true,
+        ignore_warnings: false,
+    },
+
     resource_dirs: [
         "res",
     ],

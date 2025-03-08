@@ -50,7 +50,11 @@ android_app {
     generate_product_characteristics_rro: true,
 
     optimize: {
+        enabled: true,
         optimize: true,
+        shrink: true,
+        shrink_resources: true,
         optimized_shrink_resources: true,
+        ignore_warnings: false,
     },
 }
