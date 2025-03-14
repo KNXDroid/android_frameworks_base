@@ -72,7 +72,11 @@ public class MainSwitchPreference extends TwoStatePreference implements OnChecke
         mMainSwitchBar = (MainSwitchBar) holder.findViewById(R.id.settingslib_main_switch_bar);
         // To support onPreferenceChange callback, it needs to call callChangeListener() when
         // MainSwitchBar is clicked.
-        mMainSwitchBar.setOnClickListener((view) -> callChangeListener(isChecked()));
+        mMainSwitchBar.setOnClickListener((view) -> {
+            if (!callChangeListener(isChecked())) {
+                setChecked(!isChecked());
+            }
+        });
         setIconSpaceReserved(isIconSpaceReserved());
         updateStatus(isChecked());
         registerListenerToSwitchBar();
