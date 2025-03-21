@@ -22,7 +22,6 @@ import androidx.compose.animation.graphics.ExperimentalAnimationGraphicsApi
 import androidx.compose.animation.graphics.res.animatedVectorResource
 import androidx.compose.animation.graphics.res.rememberAnimatedVectorPainter
 import androidx.compose.animation.graphics.vector.AnimatedImageVector
-import androidx.compose.foundation.background
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -117,15 +116,6 @@ fun LargeTileContent(
             )
         }
 
-        if (toggleClick != null) {
-            Box(
-                modifier = Modifier
-                    .width(1.dp)
-                    .height(CommonTileDefaults.LargeTileIconSize)
-                    .background(colors.secondaryLabel)
-            )
-        }
-
         // Labels
         LargeTileLabels(
             label = label,
@@ -144,7 +134,7 @@ fun LargeTileLabels(
     modifier: Modifier = Modifier,
     accessibilityUiState: AccessibilityUiState? = null,
 ) {
-    Column(verticalArrangement = Arrangement.Center, modifier = modifier.fillMaxHeight().padding(end = 12.dp)) {
+    Column(verticalArrangement = Arrangement.Center, modifier = modifier.fillMaxHeight()) {
         Text(label, color = colors.label, modifier = Modifier.tileMarquee())
         if (!TextUtils.isEmpty(secondaryLabel)) {
             Text(
@@ -204,11 +194,11 @@ fun SmallTileContent(
 }
 
 object CommonTileDefaults {
-    val IconSize = 20.dp
-    val ToggleTargetSize = 20.dp
-    val TileHeight = 69.dp
+    val IconSize = 24.dp
+    val ToggleTargetSize = 56.dp
+    val TileHeight = 72.dp
     val TilePadding = 8.dp
-    val TileArrangementPadding = 14.dp
+    val TileArrangementPadding = 6.dp
     val InactiveCornerRadius = 50.dp
 
     @Composable fun longPressLabel() = stringResource(id = R.string.accessibility_long_click_tile)
