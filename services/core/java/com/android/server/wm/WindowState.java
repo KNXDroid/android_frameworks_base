@@ -6183,4 +6183,15 @@ class WindowState extends WindowContainer<WindowState> implements WindowManagerP
     public boolean isCopySplashScreenFinish() {
         return mCopySplashScreenFinish;
     }
+
+    private boolean mCopySplashScreenFinish;
+
+    public void setCopySplashScreenFinish(boolean finish) {
+        mCopySplashScreenFinish = finish;
+    }
+
+    public boolean isCopySplashScreenFinish() {
+        return mCopySplashScreenFinish;
+    }
+
 }
