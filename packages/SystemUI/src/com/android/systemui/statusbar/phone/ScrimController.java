@@ -123,7 +123,7 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
     /**
      * General scrim animation duration.
      */
-    public static final long ANIMATION_DURATION = 220;
+    public static final long ANIMATION_DURATION = 370;
     /**
      * Longer duration, currently only used when going to AOD.
      */
@@ -198,9 +198,9 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
      * The default scrim under the shade and dialogs.
      * This should not be lower than 0.54, otherwise we won't pass GAR.
      */
-    public static final float BUSY_SCRIM_ALPHA = 1f;
+    public static final float BUSY_SCRIM_ALPHA = 0.87f;
 
-    private float mCustomScrimAlpha = 0.9f;
+    private float mCustomScrimAlpha = 0.85f;
 
     /**
      * Scrim opacity that can have text on top.
@@ -360,7 +360,7 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
         mLargeScreenShadeInterpolator = largeScreenShadeInterpolator;
         mDefaultScrimAlpha = BUSY_SCRIM_ALPHA;
         CrossWindowBlurListeners mBlurSupport = CrossWindowBlurListeners.getInstance();
-        mCustomScrimAlpha = mBlurSupport.isCrossWindowBlurEnabled() ? 0.8f : 1.0f;
+        mCustomScrimAlpha = 0.85f;
 
         mKeyguardStateController = keyguardStateController;
         mDarkenWhileDragging = !mKeyguardStateController.canDismissLockScreen();
