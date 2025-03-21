@@ -6173,4 +6173,14 @@ class WindowState extends WindowContainer<WindowState> implements WindowManagerP
         }
         mWmService.scheduleAnimationLocked();
     }
+
+    private boolean mCopySplashScreenFinish;
+
+    public void setCopySplashScreenFinish(boolean finish) {
+        mCopySplashScreenFinish = finish;
+    }
+
+    public boolean isCopySplashScreenFinish() {
+        return mCopySplashScreenFinish;
+    }
 }
