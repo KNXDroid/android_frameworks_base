@@ -417,6 +417,10 @@ public class NavigationBar extends ViewController<NavigationBarView> implements 
             mView.getHomeHandle().animateLongPress(isTouchDown, shrink, durationMs);
         }
 
+        public void animateNavBarDisappear(boolean isTouchDown, boolean shrink, long durationMs) {
+            mView.getHomeHandle().animateLongPress(isTouchDown, shrink, durationMs);
+        }
+
         @Override
         public void setOverrideHomeButtonLongPress(long duration, float slopMultiplier,
                 boolean haptic) {

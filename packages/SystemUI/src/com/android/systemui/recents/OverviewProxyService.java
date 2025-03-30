@@ -281,6 +281,12 @@ public class OverviewProxyService implements CallbackController<OverviewProxyLis
         }
 
         @Override
+        public void animateNavBarDisappear(boolean isTouchDown, boolean shrink, long durationMs) {
+            verifyCallerAndClearCallingIdentityPostMain("animateNavBarLongPress", () ->
+                    notifyAnimateNavBarLongPress(isTouchDown, shrink, durationMs));
+        }
+
+        @Override
         public void setOverrideHomeButtonLongPress(long duration, float slopMultiplier,
                 boolean haptic) {
             verifyCallerAndClearCallingIdentityPostMain("setOverrideHomeButtonLongPress",
