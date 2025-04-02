@@ -578,7 +578,7 @@ void FMQWrapper::writeBuffer<HalChannelMessageContents::workDuration>(hal::WorkD
                         (i == count - 1) ? ::android::uptimeNanos() : message.timeStampNanos,
                 .data = HalChannelMessageContents::make<HalChannelMessageContents::workDuration,
                                                         hal::WorkDurationFixedV1>({
-                        .durationNanos = message.cpuDurationNanos,
+                        .durationNanos = message.durationNanos,
                         .workPeriodStartTimestampNanos = message.workPeriodStartTimestampNanos,
                         .cpuDurationNanos = message.cpuDurationNanos,
                         .gpuDurationNanos = message.gpuDurationNanos,
