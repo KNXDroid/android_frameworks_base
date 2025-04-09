@@ -382,6 +382,7 @@ public final class PinnerService extends SystemService {
             "/system/framework/arm/boot-core-libart.vdex",
             "/system/framework/arm/boot-ext.vdex",
             "/system/lib/libhidltransport.so",
+            "/system/lib64/libutils.so",
             "/system/lib64/libandroid_runtime.so",
             "/system/lib64/libhwui.so",
             "/system/lib64/libjpeg.so",
@@ -401,7 +402,17 @@ public final class PinnerService extends SystemService {
             "/system/lib64/libRSCpuRef.so",
             "/system/lib64/libblas.so",
             "/vendor/lib/lib_aion_buffer.so",
-            "/vendor/lib64/lib_aion_buffer.so"
+            "/vendor/lib64/lib_aion_buffer.so",
+            "/system/lib/libbinder.so",
+            "/system/lib/libbinder_ndk.so",
+            "/system/lib64/libbinder.so",
+            "/system/lib64/libbinder_ndk.so",
+            "/apex/com.android.art/lib64/libart.so",
+            "/apex/com.android.art/lib/libart.so",
+            "/system/lib/libgui.so",
+            "/system/lib64/libgui.so",
+            "/system/lib64/libmedia.so",
+            "/system/lib/libmedia.so"
         };
 
         Set<String> filesToPin = new LinkedHashSet<>();
