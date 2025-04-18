@@ -30,57 +30,49 @@ import java.util.concurrent.Executor;
  * relatively long-running operations like saving state to disk (in addition to
  * simply being a background priority), which can cause operations scheduled on it
  * to be delayed for a user-noticeable amount of time.
+ *
+ * @hide
  */
+@android.ravenwood.annotation.RavenwoodKeepWholeClass
 public final class FgThread extends ServiceThread {
     private static final long SLOW_DISPATCH_THRESHOLD_MS = 100;
     private static final long SLOW_DELIVERY_THRESHOLD_MS = 200;
 
-    private static volatile FgThread sInstance;
-    private static volatile Handler sHandler;
-    private static volatile HandlerExecutor sHandlerExecutor;
+    private Handler mHandler;
+    private HandlerExecutor mHandlerExecutor;
 
     private FgThread() {
         super("android.fg", android.os.Process.THREAD_PRIORITY_DEFAULT, true /*allowIo*/);
     }
 
-    private static void ensureThreadLocked() {
-        if (sInstance == null) {
+    public static FgThread get() {
+        return ThreadHolder.INSTANCE;
+    }
+
+    public static Handler getHandler() {
+        return ThreadHolder.INSTANCE.mHandler;
+    }
+
+    public static Executor getExecutor() {
+        return ThreadHolder.INSTANCE.mHandlerExecutor;
+    }
+
+    private static void initHandler(FgThread thread) {
+        thread.mHandler = makeSharedHandler(thread.getLooper());
+    }
+
+    private static final class ThreadHolder {
+        private static final FgThread INSTANCE;
+        static {
             FgThread thread = new FgThread();
             thread.start();
             final Looper looper = thread.getLooper();
             looper.setTraceTag(Trace.TRACE_TAG_SYSTEM_SERVER);
             looper.setSlowLogThresholdMs(
                     SLOW_DISPATCH_THRESHOLD_MS, SLOW_DELIVERY_THRESHOLD_MS);
-            sInstance = thread;
-            sHandler = makeSharedHandler(looper);
-            sHandlerExecutor = new HandlerExecutor(sHandler);
+            initHandler(thread);
+            thread.mHandlerExecutor = new HandlerExecutor(thread.mHandler);
+            INSTANCE = thread;
         }
-    }
-
-    public static FgThread get() {
-        if (sInstance == null) {
-            synchronized (FgThread.class) {
-                ensureThreadLocked();
-            }
-        }
-        return sInstance;
-    }
-
-    public static Handler getHandler() {
-        if (sHandler == null) {
-            synchronized (FgThread.class) {
-                ensureThreadLocked();
-            }
-        }
-        return sHandler;
-    }
-
-    public static Executor getExecutor() {
-        if (sHandlerExecutor == null) {
-            synchronized (FgThread.class) {
-                ensureThreadLocked();
-            }
-        }
-        return sHandlerExecutor;
     }
 }
