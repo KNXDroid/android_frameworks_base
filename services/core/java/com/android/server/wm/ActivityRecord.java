@@ -7701,15 +7701,14 @@ public final class ActivityRecord extends WindowToken implements WindowManagerSe
      * Creates a layer to apply crop to an animation.
      */
     private SurfaceControl createAnimationBoundsLayer(Transaction t) {
-        ProtoLog.i(WM_DEBUG_APP_TRANSITIONS_ANIM, "Creating animation bounds layer");
         final SurfaceControl.Builder builder = makeAnimationLeash()
                 .setParent(getAnimationLeashParent())
                 .setName(getSurfaceControl() + " - animation-bounds")
                 .setCallsite("ActivityRecord.createAnimationBoundsLayer");
-        if (mNeedsLetterboxedAnimation) {
+        //if (mNeedsLetterboxedAnimation) {
             // Needs to be an effect layer to support rounded corners
-            builder.setEffectLayer();
-        }
+            //builder.setEffectLayer();
+        //}
         final SurfaceControl boundsLayer = builder.build();
         t.show(boundsLayer);
         return boundsLayer;

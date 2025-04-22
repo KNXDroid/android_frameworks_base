@@ -429,6 +429,7 @@ public class SurfaceAnimator {
         // surface now has a new animation surface. We don't want to reparent for that.
         final boolean reparent = surface != null && (curAnimationLeash == null
                 || curAnimationLeash.equals(leash));
+
         if (reparent) {
             ProtoLog.i(WM_DEBUG_ANIM, "Reparenting to original parent: %s for %s",
                     parent, animatable);
@@ -438,25 +439,23 @@ public class SurfaceAnimator {
                 t.reparent(surface, parent);
                 scheduleAnim = true;
             }
-        }
-        if (destroy) {
-            t.remove(leash);
-            scheduleAnim = true;
-        }
-
-        if (reparent) {
             // Make sure to inform the animatable after the surface was reparented (or reparent
             // wasn't possible, but we still need to invoke the callback)
             animatable.onAnimationLeashLost(t);
             scheduleAnim = true;
         }
+
+        if (destroy) {
+            t.remove(leash);
+            scheduleAnim = true;
+        }
+
         return scheduleAnim;
     }
 
     static SurfaceControl createAnimationLeash(Animatable animatable, SurfaceControl surface,
             Transaction t, @AnimationType int type, int width, int height, int x, int y,
             boolean hidden, Supplier<Transaction> transactionFactory) {
-        ProtoLog.i(WM_DEBUG_ANIM, "Reparenting to leash for %s", animatable);
         final SurfaceControl.Builder builder = animatable.makeAnimationLeash()
                 .setParent(animatable.getAnimationLeashParent())
                 .setName(surface + " - animation-leash of " + animationTypeToString(type))

@@ -1545,7 +1545,7 @@ class TaskFragment extends WindowContainer<WindowContainer> {
             } else {
                 dc.prepareAppTransition(TRANSIT_OPEN);
                 if (mPowerManagerInternal != null) {
-                    mPowerManagerInternal.setPowerBoost(Boost.INTERACTION, 5000);
+                    mPowerManagerInternal.setPowerBoost(Boost.INTERACTION, 1500);
                 }
             }
         }
@@ -2578,7 +2578,7 @@ class TaskFragment extends WindowContainer<WindowContainer> {
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newParentConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newParentConfig) {
         super.onConfigurationChanged(newParentConfig);
         updateOrganizedTaskFragmentSurface();
         sendTaskFragmentInfoChanged();
@@ -2602,14 +2602,12 @@ class TaskFragment extends WindowContainer<WindowContainer> {
         if (mDelayOrganizedTaskFragmentSurfaceUpdate || mTaskFragmentOrganizer == null) {
             return;
         }
-        if (mTransitionController.isShellTransitionsEnabled()
-                && !mTransitionController.isCollecting(this)) {
-            // TaskFragmentOrganizer doesn't have access to the surface for security reasons, so
-            // update the surface here if it is not collected by Shell transition.
-            updateOrganizedTaskFragmentSurfaceUnchecked();
-        } else if (!mTransitionController.isShellTransitionsEnabled() && !isAnimating()) {
-            // Update the surface here instead of in the organizer so that we can make sure
-            // it can be synced with the surface freezer for legacy app transition.
+        final boolean shellTransitionsEnabled = mTransitionController.isShellTransitionsEnabled();
+        final boolean isCollecting = shellTransitionsEnabled && mTransitionController.isCollecting(this);
+        final boolean isAnimating = !shellTransitionsEnabled && isAnimating();
+
+        // Update surface if not collected by Shell transition or not animating in legacy mode
+        if (!isCollecting || isAnimating) {
             updateOrganizedTaskFragmentSurfaceUnchecked();
         }
     }
