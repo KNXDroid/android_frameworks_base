@@ -2203,7 +2203,7 @@ public abstract class NotificationListenerService extends Service {
          * current DND state, or whether the posting app is foreground.</p>
          */
         public boolean canBubble() {
-            return mCanBubble;
+            return false;
         }
 
         /** @hide */
