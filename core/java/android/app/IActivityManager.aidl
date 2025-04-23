@@ -1026,4 +1026,7 @@ interface IActivityManager {
     @JavaPassthrough(annotation="@android.annotation.RequiresPermission(android.Manifest.permission.DEVICE_POWER)")
     void noteAppRestrictionEnabled(in String packageName, int uid, int restrictionType,
             boolean enabled, int reason, in String subReason, int source, long threshold);
+
+    void loadProcessMemory(in String packageName);
+    void releaseMemory(int minAdj, int maxKillCount, boolean includeUIProcesses, boolean skipCamera);
 }
