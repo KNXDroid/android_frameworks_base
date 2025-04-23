@@ -1483,7 +1483,7 @@ public class VolumeDialogImpl implements VolumeDialog, Dumpable,
 
     private boolean shouldShowAppVolume() {
         ContentResolver cr = mContext.getContentResolver();
-        int showAppVolume = Settings.System.getInt(cr, Settings.System.SHOW_APP_VOLUME, 0);
+        int showAppVolume = 1;
         boolean ret = showAppVolume == 1;
         if (ret) {
             ret = false;
