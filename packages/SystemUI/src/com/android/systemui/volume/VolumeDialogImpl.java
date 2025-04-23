@@ -69,12 +69,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.RotateDrawable;
-<<<<<<< HEAD
-=======
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RoundRectShape;
 import android.media.AppVolume;
->>>>>>> 429522591435c (base: support per-app volume [2/3])
 import android.media.AudioManager;
 import android.media.AudioSystem;
 import android.media.session.MediaController;
