@@ -62,6 +62,7 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.ServiceManager;
@@ -443,6 +444,8 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces {
     private final StatusBarSignalPolicy mStatusBarSignalPolicy;
     private final StatusBarHideIconsForBouncerManager mStatusBarHideIconsForBouncerManager;
     private final Lazy<LightRevealScrimViewModel> mLightRevealScrimViewModelLazy;
+
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     /** Controller for the Shade. */
     private final ShadeSurface mShadeSurface;
@@ -2617,6 +2620,8 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces {
                     ArcaneIdleManager.executeManager();
                 }
             }
+            // make sure we do garbage collection at screen off but delay it to avoid black wallpaper
+            mHandler.postDelayed(mSystemUiGcOpt, 1000);
         }
 
         @Override
@@ -2689,6 +2694,7 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces {
                                               mLockscreenUserManager.getCurrentUserId()) == 1) {
                 ArcaneIdleManager.haltManager();
             }
+            mHandler.removeCallbacks(mSystemUiGcOpt);
         }
 
         /**
@@ -2747,6 +2753,16 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces {
                 }
             }
             updateScrimController();
+        }
+    };
+
+    private final Runnable mSystemUiGcOpt = new Runnable() {
+        @Override
+        public void run() {
+            System.gc();
+            System.runFinalization();
+            System.gc();
+            Log.v("GcOpt", "performing garbage collection for SystemUI");
         }
     };
 
