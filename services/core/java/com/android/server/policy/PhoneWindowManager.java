@@ -6549,6 +6549,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         if (mKeyguardDelegate != null) {
             mKeyguardDelegate.onStartedGoingToSleep(pmSleepReason);
         }
+
+        // make sure we do garbage collection at screen off but delay it to avoid black wallpaper
+        mHandler.postDelayed(mSystemServerGcOpt, 1000);
     }
 
     // Called on the PowerManager's Notifier thread.
@@ -6608,6 +6611,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         loadProcessMemory("com.android.systemui");
         loadProcessMemory("com.android.launcher3");
 
+        // remove pending system server gc for frequent screen state changes
+        mHandler.removeCallbacks(mSystemServerGcOpt);
+
         mIsGoingToSleepDefaultDisplay = false;
         mDefaultDisplayPolicy.setAwake(true);
 
@@ -6627,6 +6633,16 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
         mCameraGestureTriggered = false;
     }
+    
+    private final Runnable mSystemServerGcOpt = new Runnable() {
+        @Override
+        public void run() {
+            System.gc();
+            System.runFinalization();
+            System.gc();
+            Log.v("GcOpt", "performing garbage collection for system_server");
+        }
+    };
 
     // Called on the PowerManager's Notifier thread.
     @Override
