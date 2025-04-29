@@ -478,6 +478,9 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces {
     private final ActivityStarter mActivityStarter;
 
     private final DisplayMetrics mDisplayMetrics;
+    
+    private static final long GC_INTERVAL_MS = 10 * 60 * 1000L; // 10 minutes
+    private long lastGcTime = 0L;
 
     // XXX: gesture research
     private final GestureRecorder mGestureRec = DEBUG_GESTURES
@@ -2759,10 +2762,14 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces {
     private final Runnable mSystemUiGcOpt = new Runnable() {
         @Override
         public void run() {
-            System.gc();
-            System.runFinalization();
-            System.gc();
-            Log.v("GcOpt", "performing garbage collection for SystemUI");
+            long currentTime = System.currentTimeMillis();
+            if (lastGcTime == 0L || currentTime - lastGcTime > GC_INTERVAL_MS) {
+                Log.v("GcOpt", "performing garbage collection for SystemUI");
+                System.gc();
+                System.runFinalization();
+                System.gc();
+                lastGcTime = currentTime;
+            }
         }
     };
 
