@@ -19349,8 +19349,12 @@ public class ActivityManagerService extends IActivityManager.Stub
             ArrayList<ProcessRecord> processList = 
                 (ArrayList<ProcessRecord>) mProcessList.getLruProcessesLOSP().clone();
 
+            ArrayList<ProcessRecord> runningProcesses = getRunningProcesses();
+
+            processList.addAll(runningProcesses);
+
             ArrayList<ProcessToKill> toKill = new ArrayList<>();
-            
+
             for (ProcessRecord record : processList) {
                 if (record != null && record.getSetAdj() >= minAdj) {
                     boolean hasUI = record.hasActivities();
@@ -19376,7 +19380,22 @@ public class ActivityManagerService extends IActivityManager.Stub
                 }
             }
 
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
+    }
+
+    private ArrayList<ProcessRecord> getRunningProcesses() {
+        ArrayList<ProcessRecord> runningProcesses = new ArrayList<>();
+        List<ActivityManager.RunningAppProcessInfo> runningAppProcesses = getRunningAppProcesses();
+        for (ActivityManager.RunningAppProcessInfo runningAppProcess : runningAppProcesses) {
+            String processName = runningAppProcess.processName;
+            String packageName = processName.split(":")[0];
+            ProcessRecord processRecord = getProcessRecord(packageName);
+            if (processRecord != null) {
+                runningProcesses.add(processRecord);
+            }
+        }
+        return runningProcesses;
     }
 
     public class ProcessComparator implements Comparator<ProcessToKill> {
