@@ -400,7 +400,6 @@ public class ViewConfiguration {
     private final int mOverscrollDistance;
     private final int mOverflingDistance;
     private final boolean mViewTouchScreenHapticScrollFeedbackEnabled;
-    private final boolean mFadingMarqueeEnabled;
     private final long mGlobalActionsKeyTimeout;
     private final float mVerticalScrollFactor;
     private final float mHorizontalScrollFactor;
@@ -454,7 +453,6 @@ public class ViewConfiguration {
         mMaximumDrawingCacheSize = MAXIMUM_DRAWING_CACHE_SIZE;
         mOverscrollDistance = OVERSCROLL_DISTANCE;
         mOverflingDistance = OVERFLING_DISTANCE;
-        mFadingMarqueeEnabled = true;
         mGlobalActionsKeyTimeout = GLOBAL_ACTIONS_KEY_TIMEOUT;
         mHorizontalScrollFactor = HORIZONTAL_SCROLL_FACTOR;
         mVerticalScrollFactor = VERTICAL_SCROLL_FACTOR;
@@ -547,7 +545,6 @@ public class ViewConfiguration {
             }
         }
 
-        mFadingMarqueeEnabled = res.getBoolean(R.bool.config_ui_enableFadingMarquee);
         mTouchSlop = res.getDimensionPixelSize(R.dimen.config_viewConfigurationTouchSlop);
         mHandwritingSlop = res.getDimensionPixelSize(
                 R.dimen.config_viewConfigurationHandwritingSlop);
@@ -1496,15 +1493,6 @@ public class ViewConfiguration {
                     + "constructor with no Context parameter");
         }
         return mMinScalingSpan;
-    }
-
-    /**
-     * @hide
-     * @return Whether or not marquee should use fading edges.
-     */
-    @UnsupportedAppUsage
-    public boolean isFadingMarqueeEnabled() {
-        return mFadingMarqueeEnabled;
     }
 
     /**
