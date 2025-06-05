@@ -1873,6 +1873,9 @@ public final class ProcessList {
         try {
             final int userId = UserHandle.getUserId(app.uid);
             try {
+                if (app.mOptRecord.isFrozen()) {
+                    ProcessFreezerManager.getInstance().unFreezeProcess(app);
+                }
                 AppGlobals.getPackageManager().checkPackageStartable(app.info.packageName, userId);
             } catch (RemoteException e) {
                 throw e.rethrowAsRuntimeException();
