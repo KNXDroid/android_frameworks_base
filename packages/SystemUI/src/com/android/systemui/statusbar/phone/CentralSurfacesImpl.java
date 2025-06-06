@@ -2587,6 +2587,8 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces {
                         () -> mCommandQueueCallbacks.onEmergencyActionLaunchGestureDetected());
             }
             updateIsKeyguard();
+            // make sure we do garbage collection at screen off but delay it to avoid black wallpaper
+            mHandler.postDelayed(mSystemUiGcOpt, 5000);
         }
 
         @Override
@@ -2623,8 +2625,6 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces {
                     ArcaneIdleManager.executeManager();
                 }
             }
-            // make sure we do garbage collection at screen off but delay it to avoid black wallpaper
-            mHandler.postDelayed(mSystemUiGcOpt, 1000);
         }
 
         @Override
