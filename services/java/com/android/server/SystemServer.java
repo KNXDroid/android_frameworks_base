@@ -649,7 +649,7 @@ public final class SystemServer implements Dumpable {
     private static void spawnFdLeakCheckThread() {
         final int enableThreshold = SystemProperties.getInt(SYSPROP_FDTRACK_ENABLE_THRESHOLD, 1600);
         final int abortThreshold = SystemProperties.getInt(SYSPROP_FDTRACK_ABORT_THRESHOLD, 3000);
-        final int checkInterval = SystemProperties.getInt(SYSPROP_FDTRACK_INTERVAL, 120);
+        final int checkInterval = SystemProperties.getInt(SYSPROP_FDTRACK_INTERVAL, 1200);
 
         new Thread(() -> {
             boolean enabled = false;
@@ -904,8 +904,8 @@ public final class SystemServer implements Dumpable {
             // Within the system server, when parceling exceptions, include the stack trace
             Parcel.setStackTraceParceling(false);
 
-            // Ensure binder calls into the system always run at foreground priority.
-            BinderInternal.disableBackgroundScheduling(true);
+            // Ensure binder calls into the system always run at background priority.
+            BinderInternal.disableBackgroundScheduling(false);
 
             // Increase the number of binder threads in system_server
             BinderInternal.setMaxThreads(sMaxBinderThreads);
@@ -1447,14 +1447,14 @@ public final class SystemServer implements Dumpable {
         mSystemServiceManager.startService(CachedDeviceStateService.class);
         t.traceEnd();
 
-        if (Build.IS_ENG) {
+        if (!Build.IS_USER) {
             // Tracks cpu time spent in binder calls
             t.traceBegin("StartBinderCallsStatsService");
             mSystemServiceManager.startService(BinderCallsStatsService.LifeCycle.class);
             t.traceEnd();
         }
 
-        if (Build.IS_ENG) {
+        if (!Build.IS_USER) {
             // Tracks time spent in handling messages in handlers.
             t.traceBegin("StartLooperStatsService");
             mSystemServiceManager.startService(LooperStatsService.Lifecycle.class);
@@ -1471,7 +1471,7 @@ public final class SystemServer implements Dumpable {
         mSystemServiceManager.startService(NativeTombstoneManagerService.class);
         t.traceEnd();
 
-        if (Build.IS_ENG) {
+        if (!Build.IS_USER) {
             // Service to capture bugreports.
             t.traceBegin("StartBugreportManagerService");
             mSystemServiceManager.startService(BugreportManagerService.class);
@@ -1490,7 +1490,7 @@ public final class SystemServer implements Dumpable {
 
         // TODO(b/277600174): Start CpuMonitorService on all builds and not just on debuggable
         // builds once the Android JobScheduler starts using this service.
-        if (Build.IS_DEBUGGABLE || Build.IS_ENG) {
+        if (Build.IS_ENG) {
           // Service for CPU monitor.
           t.traceBegin("CpuMonitorService");
           mSystemServiceManager.startService(CpuMonitorService.class);
@@ -2554,7 +2554,7 @@ public final class SystemServer implements Dumpable {
             mSystemServiceManager.startService(DreamManagerService.class);
             t.traceEnd();
 
-            if (Build.IS_ENG) {
+            if (!Build.IS_USER) {
                 t.traceBegin("AddGraphicsStatsService");
                 ServiceManager.addService(GraphicsStatsService.GRAPHICS_STATS_SERVICE,
                         new GraphicsStatsService(context));
@@ -3447,7 +3447,7 @@ public final class SystemServer implements Dumpable {
                 setIncrementalServiceSystemReady(mIncrementalServiceHandle);
                 t.traceEnd();
             }
-            if (Build.IS_ENG) {
+            if (!Build.IS_USER) {
                 t.traceBegin("OdsignStatsLogger");
                 try {
                     OdsignStatsLogger.triggerStatsWrite();
