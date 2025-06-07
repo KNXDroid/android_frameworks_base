@@ -58,7 +58,7 @@ import java.util.concurrent.TimeUnit;
 /** Service to monitor CPU availability and usage. */
 public final class CpuMonitorService extends SystemService {
     static final String TAG = CpuMonitorService.class.getSimpleName();
-    static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
+    static final boolean DEBUG = false;
     // TODO(b/267500110): Make these constants resource overlay properties.
     /** Default monitoring interval when no monitoring is in progress. */
     static final long DEFAULT_MONITORING_INTERVAL_MILLISECONDS = -1;
