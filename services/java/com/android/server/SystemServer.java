@@ -321,6 +321,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+import com.android.server.android.PerformanceBoosterService;
+
 /**
  * Entry point to {@code system_server}.
  */
@@ -1552,6 +1554,13 @@ public final class SystemServer implements Dumpable {
                 throw new RuntimeException();
             }
         }
+
+	try {
+	    Slog.i(TAG, "Performance Booster Service");
+	    ServiceManager.addService("performance_booster", new PerformanceBoosterService(context));
+	} catch (Throwable e) {
+	    reportWtf("starting Performance Booster Service", e);
+	}
 
         try {
             final String SECONDARY_ZYGOTE_PRELOAD = "SecondaryZygotePreload";
