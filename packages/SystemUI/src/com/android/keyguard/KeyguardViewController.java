@@ -189,4 +189,6 @@ public interface KeyguardViewController {
             @Nullable ShadeExpansionStateManager shadeExpansionStateManager,
             BiometricUnlockController biometricUnlockController,
             View notificationContainer);
+            
+    void setIsFromBiometric(boolean isFromBiometric);
 }
