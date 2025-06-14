@@ -1873,6 +1873,13 @@ public final class ProcessList implements ProcessStateController.ProcessLruUpdat
     boolean startProcessLocked(ProcessRecord app, HostingRecord hostingRecord,
             int zygotePolicyFlags, boolean disableHiddenApiChecks, boolean disableTestApiChecks,
             String abiOverride) {
+        if (app.processName != null && (app.processName.contains(":AppMetrica") || app.processName.contains(":Metrica"))) {
+            Slog.w(TAG, "BLOCKED process from starting due to policy: " + app.processName);
+
+            // By returning false, we tell the ActivityManagerService that the process
+            // failed to start. The caller will handle this failure.
+            return false;
+        }
         if (app.isPendingStart()) {
             return true;
         }
