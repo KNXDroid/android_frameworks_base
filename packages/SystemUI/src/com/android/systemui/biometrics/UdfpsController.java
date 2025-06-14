@@ -111,7 +111,6 @@ import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.user.domain.interactor.SelectedUserInteractor;
 import com.android.systemui.util.concurrency.DelayableExecutor;
 import com.android.systemui.util.concurrency.Execution;
-import com.android.systemui.util.SystemUIBoostFramework;
 import com.android.systemui.util.time.SystemClock;
 
 import dagger.Lazy;
@@ -1112,8 +1111,6 @@ public class UdfpsController implements DozeReceiver, Dumpable {
         if (view != null && view.getViewRootImpl() != null) {
             view.getViewRootImpl().notifyRendererOfExpensiveFrame();
         }
-        
-        SystemUIBoostFramework.getInstance().animationBoostOn(SystemUIBoostFramework.REQUEST_ANIMATION_BOOST_TYPE_UNLOCK);
 
         if (isOptical()) {
             mLatencyTracker.onActionStart(ACTION_UDFPS_ILLUMINATE);
