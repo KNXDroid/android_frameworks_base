@@ -2409,7 +2409,7 @@ pid_t zygote::ForkCommon(JNIEnv* env, bool is_system_server,
   ATRACE_CALL();
   if (is_priority_fork) {
     setpriority(PRIO_PROCESS, 0, PROCESS_PRIORITY_MAX);
-    sched_setscheduler(0, SCHED_FIFO, &fork_param_max);
+    sched_setscheduler(0, SCHED_RR, &fork_param_max);
   }
 
   SetSignalHandlers();
@@ -2461,7 +2461,7 @@ pid_t zygote::ForkCommon(JNIEnv* env, bool is_system_server,
   if (pid == 0) {
     if (is_priority_fork) {
       setpriority(PRIO_PROCESS, 0, PROCESS_PRIORITY_MAX);
-      sched_setscheduler(0, SCHED_FIFO, &fork_param_max);
+      sched_setscheduler(0, SCHED_RR, &fork_param_max);
     } else {
       sched_setscheduler(0, SCHED_OTHER, &fork_param_min);
       setpriority(PRIO_PROCESS, 0, PROCESS_PRIORITY_MIN);
@@ -2912,7 +2912,7 @@ static void com_android_internal_os_Zygote_nativeUnblockSigTerm(JNIEnv* env, jcl
 
 static void com_android_internal_os_Zygote_nativeBoostUsapPriority(JNIEnv* env, jclass) {
   setpriority(PRIO_PROCESS, 0, PROCESS_PRIORITY_MAX);
-  sched_setscheduler(0, SCHED_FIFO, &fork_param_max);
+  sched_setscheduler(0, SCHED_RR, &fork_param_max);
 }
 
 static jint com_android_internal_os_Zygote_nativeParseSigChld(JNIEnv* env, jclass, jbyteArray in,
