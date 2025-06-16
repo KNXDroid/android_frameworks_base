@@ -138,10 +138,6 @@ import javax.inject.Provider;
 public class OverviewProxyService implements CallbackController<OverviewProxyListener>,
         NavigationModeController.ModeChangedListener, Dumpable {
 
-    private ComponentName mLaunchingAppComponent;
-    private final Runnable mClearLaunchingStateRunnable = () -> mLaunchingAppComponent = null;
-    private static final int LAUNCH_CANCEL_WINDOW_MS = 750; // Окно для отмены
-
     @VisibleForTesting
     static final String ACTION_QUICKSTEP = "android.intent.action.QUICKSTEP_SERVICE";
 
@@ -1185,28 +1181,6 @@ public class OverviewProxyService implements CallbackController<OverviewProxyLis
         final int currentUser = mUserTracker.getUserId();
         mIsEnabled = mContext.getPackageManager().resolveServiceAsUser(mQuickStepIntent,
                 MATCH_SYSTEM_ONLY, currentUser) != null;
-    }
-
-    public void cancelCurrentAppLaunch() {
-        // Запускаем на основном потоке, чтобы безопасно работать с UI
-        mMainThreadHandler.post(() -> {
-            if (mLauncher != null) {
-                // Вызываем новый метод в самом Лаунчере для обработки отмены
-                mLauncher.handleLaunchCancellation();
-            }
-        });
-    }
-
-    public void onAppLaunchStarted(ComponentName targetActivity) {
-        mHandler.removeCallbacks(mClearLaunchingStateRunnable);
-        mLaunchingAppComponent = targetActivity;
-        // Запускаем таймер, по истечении которого отмена будет невозможна
-        mHandler.postDelayed(mClearLaunchingStateRunnable, LAUNCH_CANCEL_WINDOW_MS);
-    }
-
-    // Этот метод не вызывается Лаунчером, он для внутреннего использования в SystemUI
-    public boolean isAppLaunching() {
-        return mLaunchingAppComponent != null;
     }
 
     @Override
