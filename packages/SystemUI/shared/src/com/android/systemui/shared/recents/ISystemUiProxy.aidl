@@ -22,7 +22,6 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.UserHandle;
 import android.view.MotionEvent;
-import android.content.ComponentName;
 import com.android.internal.util.ScreenshotRequest;
 
 import com.android.systemui.shared.recents.model.Task;
@@ -192,9 +191,5 @@ interface ISystemUiProxy {
      */
     oneway void animateNavBarDisappear(boolean isTouchDown, boolean shrink, long durationMs) = 59;
 
-    oneway void onAppLaunchStarted(in ComponentName targetActivity) = 60;
-
-    oneway void cancelCurrentAppLaunch() = 61;
-
-    // Next id = 62
+    // Next id = 60
 }
