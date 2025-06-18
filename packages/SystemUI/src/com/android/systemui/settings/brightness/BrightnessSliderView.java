@@ -76,6 +76,12 @@ public class BrightnessSliderView extends LinearLayout {
                     .findDrawableByLayerId(android.R.id.progress);
             LayerDrawable actualProgressSlider = (LayerDrawable) progressSlider.getDrawable();
             mProgressDrawable = actualProgressSlider.findDrawableByLayerId(R.id.slider_foreground);
+            Drawable background = progress.findDrawableByLayerId(android.R.id.background);
+            if (background != null) {
+                background.setAlpha((int) (0.7f * 255));
+                int inactiveColor = com.android.settingslib.Utils.getColorAttrDefaultColor(mContext, R.attr.shadeInactiveExpressive);
+                background.setTint(inactiveColor);
+            }
         } catch (Exception e) {
             // Nothing to do, mProgressDrawable will be null.
         }

@@ -119,8 +119,12 @@ constructor(
             updateHeight()
         }
 
-    private val colorActive = Utils.getColorAttrDefaultColor(context, R.attr.shadeActive)
-    private val colorInactive = Utils.getColorAttrDefaultColor(context, R.attr.shadeInactive)
+    private val ActiveAlpha = 0.93f
+    private val colorActive = Utils.applyAlpha(ActiveAlpha, Utils.getColorAttrDefaultColor(context, R.attr.shadeActive))
+    private val inactiveColorAttr = R.attr.shadeInactiveExpressive
+    private val colorInactiveColor = Utils.getColorAttrDefaultColor(context, inactiveColorAttr)
+    private val inactiveAlpha = 0.6f
+    private val colorInactive = Utils.applyAlpha(inactiveAlpha, colorInactiveColor)
     private val colorUnavailable = Utils.getColorAttrDefaultColor(context, R.attr.shadeDisabled)
 
     private val overlayColorActive =

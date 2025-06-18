@@ -360,7 +360,7 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
         mLargeScreenShadeInterpolator = largeScreenShadeInterpolator;
         mDefaultScrimAlpha = BUSY_SCRIM_ALPHA;
         CrossWindowBlurListeners mBlurSupport = CrossWindowBlurListeners.getInstance();
-        mCustomScrimAlpha = 0.85f;
+        mCustomScrimAlpha = 0.75f;
 
         mKeyguardStateController = keyguardStateController;
         mDarkenWhileDragging = !mKeyguardStateController.canDismissLockScreen();

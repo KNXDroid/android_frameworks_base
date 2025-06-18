@@ -1637,7 +1637,7 @@
     <!-- Screen brightness used to dim the screen when the user activity
          timeout expires.  May be less than the minimum allowed brightness setting
          that can be set by the user. -->
-    <integer name="config_screenBrightnessDim">10</integer>
+    <integer name="config_screenBrightnessDim">16</integer>
     <item name="config_screenBrightnessDimFloat" format="float" type="dimen">0.05</item>
 
     <!-- If the screen brightness is already set at or below config_screenBrightnessDim, and the

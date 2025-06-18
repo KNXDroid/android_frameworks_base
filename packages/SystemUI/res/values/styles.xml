@@ -509,6 +509,7 @@
         <item name="onShadeActive">?androidprv:attr/customColorOnShadeActive</item>
         <item name="onShadeActiveVariant">?androidprv:attr/customColorOnShadeActiveVariant</item>
         <item name="shadeInactive">?androidprv:attr/customColorShadeInactive</item>
+        <item name="shadeInactiveExpressive">@android:color/system_neutral1_900</item>
         <item name="onShadeInactive">?androidprv:attr/customColorOnShadeInactive</item>
         <item name="onShadeInactiveVariant">?androidprv:attr/customColorOnShadeInactiveVariant</item>
         <item name="shadeDisabled">?androidprv:attr/customColorShadeDisabled</item>

@@ -126,6 +126,7 @@
     <attr name="shadeActive" format="reference|color" />
     <attr name="onShadeActive" format="reference|color" />
     <attr name="onShadeActiveVariant" format="reference|color" />
+    <attr name="shadeInactiveExpressive" format="reference|color" />
     <attr name="shadeInactive" format="reference|color" />
     <attr name="onShadeInactive" format="reference|color" />
     <attr name="onShadeInactiveVariant" format="reference|color" />
