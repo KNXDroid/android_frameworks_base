@@ -97,8 +97,15 @@ public class SliceManagerService extends ISliceManager.Stub {
     private final SparseArray<PackageMatchingCache> mAssistantLookup = new SparseArray<>();
     @GuardedBy("mLock")
     private final SparseArray<PackageMatchingCache> mHomeLookup = new SparseArray<>();
-    private final Handler mHandler;
+    // OPTIMIZED: Cache for authority -> package name to reduce IPC calls.
+    @GuardedBy("mLock")
+    private final ArrayMap<String, String> mProviderPkgCache = new ArrayMap<>();
 
+    // OPTIMIZED: Per-user cache for the default home app package.
+    @GuardedBy("mLock")
+    private final SparseArray<String> mCachedDefaultHomeByUser = new SparseArray<>();
+
+    private final Handler mHandler;
     private final SlicePermissionManager mPermissions;
     private final UsageStatsManagerInternal mAppUsageStats;
 
@@ -137,6 +144,10 @@ public class SliceManagerService extends ISliceManager.Stub {
     private void onStopUser(int userId) {
         synchronized (mLock) {
             mPinnedSlicesByUri.values().removeIf(s -> getUserIdFromUri(s.getUri()) == userId);
+            // OPTIMIZED: Clean up user-specific caches on user stop.
+            mAssistantLookup.remove(userId);
+            mHomeLookup.remove(userId);
+            mCachedDefaultHomeByUser.remove(userId);
         }
     }
 
@@ -147,6 +158,10 @@ public class SliceManagerService extends ISliceManager.Stub {
         int callingUser = Binder.getCallingUserHandle().getIdentifier();
         ArrayList<Uri> ret = new ArrayList<>();
         synchronized (mLock) {
+            // OPTIMIZED: Avoid creating an iterator if the map is empty.
+            if (mPinnedSlicesByUri.isEmpty()) {
+                return new Uri[0];
+            }
             for (PinnedSliceState state : mPinnedSlicesByUri.values()) {
                 if (Objects.equals(pkg, state.getPkg())) {
                     Uri uri = state.getUri();
@@ -157,7 +172,7 @@ public class SliceManagerService extends ISliceManager.Stub {
                 }
             }
         }
-        return ret.toArray(new Uri[ret.size()]);
+        return ret.toArray(new Uri[0]);
     }
 
     @Override
@@ -405,12 +420,30 @@ public class SliceManagerService extends ISliceManager.Stub {
     }
 
     private String getProviderPkg(Uri uri, int user) {
+        Uri authorityUri = getUriWithoutUserId(uri);
+        String authority = authorityUri.getAuthority();
+        if (authority == null) return null;
+
+        // OPTIMIZED: Check cache first to avoid expensive IPC call.
+        synchronized (mLock) {
+            if (mProviderPkgCache.containsKey(authority)) {
+                return mProviderPkgCache.get(authority);
+            }
+        }
+
         final long ident = Binder.clearCallingIdentity();
         try {
-            String providerName = getUriWithoutUserId(uri).getAuthority();
             ProviderInfo provider = mContext.getPackageManager().resolveContentProviderAsUser(
-                    providerName, 0, getUserIdFromUri(uri, user));
-            return provider == null ? null : provider.packageName;
+                    authority, 0, getUserIdFromUri(uri, user));
+            String pkgName = (provider == null) ? null : provider.packageName;
+
+            // OPTIMIZED: Store the resolved package name in the cache.
+            if (pkgName != null) {
+                synchronized (mLock) {
+                    mProviderPkgCache.put(authority, pkgName);
+                }
+            }
+            return pkgName;
         } finally {
             Binder.restoreCallingIdentity(ident);
         }
@@ -494,69 +527,49 @@ public class SliceManagerService extends ISliceManager.Stub {
     // TODO: Unify if possible
     @VisibleForTesting
     protected String getDefaultHome(int userId) {
-
-        // Set VERIFY to true to run the cache in "shadow" mode for cache
-        // testing.  Do not commit set to true;
-        final boolean VERIFY = false;
-
-        if (mCachedDefaultHome != null) {
-            if (!VERIFY) {
-                return mCachedDefaultHome;
+        synchronized (mLock) {
+            String cachedHome = mCachedDefaultHomeByUser.get(userId);
+            if (cachedHome != null) {
+                return cachedHome;
             }
         }
 
         final long token = Binder.clearCallingIdentity();
         try {
             final List<ResolveInfo> allHomeCandidates = new ArrayList<>();
-
-            // Default launcher from package manager.
             final ComponentName defaultLauncher = mPackageManagerInternal
                     .getHomeActivitiesAsUser(allHomeCandidates, userId);
 
             ComponentName detected = defaultLauncher;
-
-            // Cache the default launcher.  It is not a problem if the
-            // launcher is null - eventually, the default launcher will be
-            // set to something non-null.
-            mCachedDefaultHome = ((detected != null) ? detected.getPackageName() : null);
-
             if (detected == null) {
-                // If we reach here, that means it's the first check since the user was created,
-                // and there's already multiple launchers and there's no default set.
-                // Find the system one with the highest priority.
-                // (We need to check the priority too because of FallbackHome in Settings.)
-                // If there's no system launcher yet, then no one can access slices, until
-                // the user explicitly sets one.
-                final int size = allHomeCandidates.size();
-
+                // Fallback logic to find the best system home app
                 int lastPriority = Integer.MIN_VALUE;
-                for (int i = 0; i < size; i++) {
-                    final ResolveInfo ri = allHomeCandidates.get(i);
-                    if (!ri.activityInfo.applicationInfo.isSystemApp()) {
-                        continue;
+                for (ResolveInfo ri : allHomeCandidates) {
+                    if (ri.activityInfo.applicationInfo.isSystemApp() && ri.priority >= lastPriority) {
+                        detected = ri.activityInfo.getComponentName();
+                        lastPriority = ri.priority;
                     }
-                    if (ri.priority < lastPriority) {
-                        continue;
-                    }
-                    detected = ri.activityInfo.getComponentName();
-                    lastPriority = ri.priority;
                 }
             }
-            final String ret = ((detected != null) ? detected.getPackageName() : null);
-            if (VERIFY) {
-                if (mCachedDefaultHome != null && !mCachedDefaultHome.equals(ret)) {
-                    Slog.e(TAG, "getDefaultHome() cache failure, is " +
-                           mCachedDefaultHome + " should be " + ret);
+
+            final String homePkg = (detected != null) ? detected.getPackageName() : null;
+            // OPTIMIZED: Cache the result for the specific user.
+            if (homePkg != null) {
+                synchronized (mLock) {
+                    mCachedDefaultHomeByUser.put(userId, homePkg);
                 }
             }
-            return ret;
+            return homePkg;
         } finally {
             Binder.restoreCallingIdentity(token);
         }
     }
 
-    public void invalidateCachedDefaultHome() {
-        mCachedDefaultHome = null;
+    // OPTIMIZED: Invalidate cache for a specific user.
+    public void invalidateCachedDefaultHome(int userId) {
+        synchronized (mLock) {
+            mCachedDefaultHomeByUser.remove(userId);
+        }
     }
 
     /**
@@ -578,14 +591,14 @@ public class SliceManagerService extends ISliceManager.Stub {
             mRm = mContext.getSystemService(RoleManager.class);
             if (mRm != null) {
                 mRm.addOnRoleHoldersChangedListenerAsUser(mExecutor, this, UserHandle.ALL);
-                invalidateCachedDefaultHome();
             }
         }
 
         @Override
         public void onRoleHoldersChanged(@NonNull String roleName, @NonNull UserHandle user) {
             if (RoleManager.ROLE_HOME.equals(roleName)) {
-                invalidateCachedDefaultHome();
+                // OPTIMIZED: Invalidate the specific user's cache, not a global one.
+                invalidateCachedDefaultHome(user.getIdentifier());
             }
         }
     }
@@ -605,21 +618,23 @@ public class SliceManagerService extends ISliceManager.Stub {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if (action == null) {
-                Slog.w(TAG, "Intent broadcast does not contain action: " + intent);
-                return;
-            }
-            final int userId  = intent.getIntExtra(Intent.EXTRA_USER_HANDLE, UserHandle.USER_NULL);
-            if (userId == UserHandle.USER_NULL) {
-                Slog.w(TAG, "Intent broadcast does not contain user handle: " + intent);
-                return;
-            }
+            final int userId = intent.getIntExtra(Intent.EXTRA_USER_HANDLE, UserHandle.USER_NULL);
+            if (userId == UserHandle.USER_NULL) return;
+
             Uri data = intent.getData();
-            String pkg = data != null ? data.getSchemeSpecificPart() : null;
-            if (pkg == null) {
-                Slog.w(TAG, "Intent broadcast does not contain package name: " + intent);
-                return;
+            String pkg = (data != null) ? data.getSchemeSpecificPart() : null;
+            if (pkg == null) return;
+
+            // OPTIMIZED: Selectively invalidate provider package cache.
+            synchronized (mLock) {
+                // Iterate backwards to safely remove while iterating.
+                for (int i = mProviderPkgCache.size() - 1; i >= 0; i--) {
+                    if (Objects.equals(mProviderPkgCache.valueAt(i), pkg)) {
+                        mProviderPkgCache.removeAt(i);
+                    }
+                }
             }
+
             switch (action) {
                 case Intent.ACTION_PACKAGE_REMOVED:
                     final boolean replacing =
@@ -698,28 +713,4 @@ public class SliceManagerService extends ISliceManager.Stub {
         }
     }
 
-    private class SliceGrant {
-        private final Uri mUri;
-        private final String mPkg;
-        private final int mUserId;
-
-        public SliceGrant(Uri uri, String pkg, int userId) {
-            mUri = uri;
-            mPkg = pkg;
-            mUserId = userId;
-        }
-
-        @Override
-        public int hashCode() {
-            return mUri.hashCode() + mPkg.hashCode();
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (!(obj instanceof SliceGrant)) return false;
-            SliceGrant other = (SliceGrant) obj;
-            return Objects.equals(other.mUri, mUri) && Objects.equals(other.mPkg, mPkg)
-                    && (other.mUserId == mUserId);
-        }
-    }
 }
