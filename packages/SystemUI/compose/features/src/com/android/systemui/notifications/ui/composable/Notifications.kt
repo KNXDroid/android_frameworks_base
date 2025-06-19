@@ -288,7 +288,7 @@ fun SceneScope.NotificationScrollingStack(
     val coroutineScope = rememberCoroutineScope()
     val density = LocalDensity.current
     val screenCornerRadius = LocalScreenCornerRadius.current
-    val scrimCornerRadius = dimensionResource(R.dimen.notification_scrim_corner_radius)
+    val scrimCornerRadius = 0.dp
     val scrollState =
         shadeSession.rememberSaveableSession(saver = ScrollState.Saver, key = null) {
             ScrollState(initial = 0)

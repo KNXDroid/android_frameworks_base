@@ -35,6 +35,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.DisposableHandle
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
@@ -122,5 +123,5 @@ constructor(
 
     /** flow of the scrim clipping radius */
     private val scrimRadius: Flow<Int>
-        get() = configuration.getDimensionPixelOffset(R.dimen.notification_scrim_corner_radius)
+        get() = flowOf(0)
 }
