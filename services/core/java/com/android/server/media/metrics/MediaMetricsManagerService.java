@@ -302,20 +302,6 @@ public final class MediaMetricsManagerService extends SystemService {
         @Override
         public void reportPlaybackErrorEvent(
                 String sessionId, PlaybackErrorEvent event, int userId) {
-            int level = loggingLevel();
-            if (level == LOGGING_LEVEL_BLOCKED) {
-                return;
-            }
-            StatsEvent statsEvent = StatsEvent.newBuilder()
-                    .setAtomId(323)
-                    .writeString(sessionId)
-                    .writeString(event.getExceptionStack())
-                    .writeInt(event.getErrorCode())
-                    .writeInt(event.getSubErrorCode())
-                    .writeLong(event.getTimeSinceCreatedMillis())
-                    .usePooledBuffer()
-                    .build();
-            StatsLog.write(statsEvent);
         }
 
         public void reportNetworkEvent(
@@ -570,115 +556,6 @@ public final class MediaMetricsManagerService extends SystemService {
         }
 
         private int loggingLevel() {
-            synchronized (mLock) {
-                int uid = Binder.getCallingUid();
-
-                if (mMode == null) {
-                    final long identity = Binder.clearCallingIdentity();
-                    try {
-                        mMode = DeviceConfig.getInt(
-                            DeviceConfig.NAMESPACE_MEDIA,
-                            MEDIA_METRICS_MODE,
-                            MEDIA_METRICS_MODE_BLOCKLIST);
-                    } finally {
-                        Binder.restoreCallingIdentity(identity);
-                    }
-                }
-
-                if (mMode == MEDIA_METRICS_MODE_ON) {
-                    return LOGGING_LEVEL_EVERYTHING;
-                }
-                if (mMode == MEDIA_METRICS_MODE_OFF) {
-                    Slog.v(TAG, "Logging level blocked: MEDIA_METRICS_MODE_OFF");
-                    return LOGGING_LEVEL_BLOCKED;
-                }
-
-                PackageManager pm = getContext().getPackageManager();
-                String[] packages = pm.getPackagesForUid(uid);
-                if (packages == null || packages.length == 0) {
-                    // The valid application UID range is from
-                    // android.os.Process.FIRST_APPLICATION_UID to
-                    // android.os.Process.LAST_APPLICATION_UID.
-                    // UIDs outside this range will not have a package.
-                    Slog.d(TAG, "empty package from uid " + uid);
-                    // block the data if the mode is MEDIA_METRICS_MODE_ALLOWLIST
-                    return mMode == MEDIA_METRICS_MODE_BLOCKLIST
-                            ? LOGGING_LEVEL_NO_UID : LOGGING_LEVEL_BLOCKED;
-                }
-                if (mMode == MEDIA_METRICS_MODE_BLOCKLIST) {
-                    if (mBlockList == null) {
-                        mBlockList = getListLocked(PLAYER_METRICS_APP_BLOCKLIST);
-                        if (mBlockList == null) {
-                            // failed to get the blocklist. Block it.
-                            Slog.v(TAG, "Logging level blocked: Failed to get "
-                                    + "PLAYER_METRICS_APP_BLOCKLIST.");
-                            return LOGGING_LEVEL_BLOCKED;
-                        }
-                    }
-                    Integer level = loggingLevelInternal(
-                            packages, mBlockList, PLAYER_METRICS_APP_BLOCKLIST);
-                    if (level != null) {
-                        return level;
-                    }
-                    if (mNoUidBlocklist == null) {
-                        mNoUidBlocklist =
-                                getListLocked(PLAYER_METRICS_PER_APP_ATTRIBUTION_BLOCKLIST);
-                        if (mNoUidBlocklist == null) {
-                            // failed to get the blocklist. Block it.
-                            Slog.v(TAG, "Logging level blocked: Failed to get "
-                                    + "PLAYER_METRICS_PER_APP_ATTRIBUTION_BLOCKLIST.");
-                            return LOGGING_LEVEL_BLOCKED;
-                        }
-                    }
-                    level = loggingLevelInternal(
-                            packages,
-                            mNoUidBlocklist,
-                            PLAYER_METRICS_PER_APP_ATTRIBUTION_BLOCKLIST);
-                    if (level != null) {
-                        return level;
-                    }
-                    // Not detected in any blocklist. Log everything.
-                    return LOGGING_LEVEL_EVERYTHING;
-                }
-                if (mMode == MEDIA_METRICS_MODE_ALLOWLIST) {
-                    if (mNoUidAllowlist == null) {
-                        mNoUidAllowlist =
-                                getListLocked(PLAYER_METRICS_PER_APP_ATTRIBUTION_ALLOWLIST);
-                        if (mNoUidAllowlist == null) {
-                            // failed to get the allowlist. Block it.
-                            Slog.v(TAG, "Logging level blocked: Failed to get "
-                                    + "PLAYER_METRICS_PER_APP_ATTRIBUTION_ALLOWLIST.");
-                            return LOGGING_LEVEL_BLOCKED;
-                        }
-                    }
-                    Integer level = loggingLevelInternal(
-                            packages,
-                            mNoUidAllowlist,
-                            PLAYER_METRICS_PER_APP_ATTRIBUTION_ALLOWLIST);
-                    if (level != null) {
-                        return level;
-                    }
-                    if (mAllowlist == null) {
-                        mAllowlist = getListLocked(PLAYER_METRICS_APP_ALLOWLIST);
-                        if (mAllowlist == null) {
-                            // failed to get the allowlist. Block it.
-                            Slog.v(TAG, "Logging level blocked: Failed to get "
-                                    + "PLAYER_METRICS_APP_ALLOWLIST.");
-                            return LOGGING_LEVEL_BLOCKED;
-                        }
-                    }
-                    level = loggingLevelInternal(
-                            packages, mAllowlist, PLAYER_METRICS_APP_ALLOWLIST);
-                    if (level != null) {
-                        return level;
-                    }
-                    // Not detected in any allowlist. Block.
-                    Slog.v(TAG, "Logging level blocked: Not detected in any allowlist.");
-                    return LOGGING_LEVEL_BLOCKED;
-                }
-            }
-            // Blocked by default.
-            Slog.v(TAG, "Logging level blocked: Blocked by default.");
             return LOGGING_LEVEL_BLOCKED;
         }
 
@@ -702,17 +579,7 @@ public final class MediaMetricsManagerService extends SystemService {
         }
 
         private int listNameToLoggingLevel(String listName) {
-            switch (listName) {
-                case PLAYER_METRICS_APP_BLOCKLIST:
-                    return LOGGING_LEVEL_BLOCKED;
-                case PLAYER_METRICS_APP_ALLOWLIST:
-                    return LOGGING_LEVEL_EVERYTHING;
-                case PLAYER_METRICS_PER_APP_ATTRIBUTION_ALLOWLIST:
-                case PLAYER_METRICS_PER_APP_ATTRIBUTION_BLOCKLIST:
-                    return LOGGING_LEVEL_NO_UID;
-                default:
-                    return LOGGING_LEVEL_BLOCKED;
-            }
+            return LOGGING_LEVEL_BLOCKED;
         }
     }
 
