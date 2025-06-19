@@ -47,33 +47,18 @@ public final class MediaMetricsManager {
      * @hide
      */
     public void reportPlaybackMetrics(@NonNull String sessionId, PlaybackMetrics metrics) {
-        try {
-            mService.reportPlaybackMetrics(sessionId, metrics, mUserId);
-        } catch (RemoteException e) {
-            throw e.rethrowFromSystemServer();
-        }
     }
     /**
      * Reports bundle metrics.
      * @hide
      */
     public void reportBundleMetrics(@NonNull String sessionId, PersistableBundle metrics) {
-        try {
-            mService.reportBundleMetrics(sessionId, metrics, mUserId);
-        } catch (RemoteException e) {
-            throw e.rethrowFromSystemServer();
-        }
     }
     /**
      * Reports network event.
      * @hide
      */
     public void reportNetworkEvent(@NonNull String sessionId, NetworkEvent event) {
-        try {
-            mService.reportNetworkEvent(sessionId, event, mUserId);
-        } catch (RemoteException e) {
-            throw e.rethrowFromSystemServer();
-        }
     }
 
     /**
@@ -187,11 +172,6 @@ public final class MediaMetricsManager {
      * @hide
      */
     public void reportPlaybackErrorEvent(@NonNull String sessionId, PlaybackErrorEvent event) {
-        try {
-            mService.reportPlaybackErrorEvent(sessionId, event, mUserId);
-        } catch (RemoteException e) {
-            throw e.rethrowFromSystemServer();
-        }
     }
 
     /**
