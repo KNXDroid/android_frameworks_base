@@ -81,7 +81,7 @@ class ScreenRecordPermissionDialogDelegate(
         onStartRecordingClicked,
         mediaProjectionMetricsLogger,
         systemUIDialogFactory,
-        defaultSelectedMode = ENTIRE_SCREEN,
+        defaultSelectedMode = SINGLE_APP,
         theme = SystemUIDialog.DEFAULT_THEME,
         context,
         displayManager,
