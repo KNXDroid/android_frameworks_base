@@ -3075,12 +3075,10 @@ public final class SystemServer implements Dumpable {
         }
 
         // Profiling
-        if (!Build.IS_USER) {
-            t.traceBegin("StartProfilingCompanion");
-            mSystemServiceManager.startServiceFromJar(PROFILING_SERVICE_LIFECYCLE_CLASS,
-                    PROFILING_SERVICE_JAR_PATH);
-            t.traceEnd();
-        }
+        t.traceBegin("StartProfilingCompanion");
+        mSystemServiceManager.startServiceFromJar(PROFILING_SERVICE_LIFECYCLE_CLASS,
+                PROFILING_SERVICE_JAR_PATH);
+        t.traceEnd();
 
         // Anomaly Detector
         if (!Build.IS_USER) {
@@ -3117,6 +3115,7 @@ public final class SystemServer implements Dumpable {
                 Slog.d(TAG, "UprobeStatsService disabled by flag");
             }
         }
+
         if (safeMode) {
             mActivityManagerService.enterSafeMode();
         }
