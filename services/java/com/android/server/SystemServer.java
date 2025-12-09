@@ -2931,15 +2931,14 @@ public final class SystemServer implements Dumpable {
             t.traceEnd();
         }
 
-        if (!Build.IS_USER) {
-            // Profiling
-            if (android.server.Flags.telemetryApisService()) {
-                t.traceBegin("StartProfilingCompanion");
-                mSystemServiceManager.startServiceFromJar(PROFILING_SERVICE_LIFECYCLE_CLASS,
-                        PROFILING_SERVICE_JAR_PATH);
-                t.traceEnd();
-            }
+        // Profiling
+        if (android.server.Flags.telemetryApisService()) {
+            t.traceBegin("StartProfilingCompanion");
+            mSystemServiceManager.startServiceFromJar(PROFILING_SERVICE_LIFECYCLE_CLASS,
+                    PROFILING_SERVICE_JAR_PATH);
+            t.traceEnd();
         }
+
         if (safeMode) {
             mActivityManagerService.enterSafeMode();
         }
